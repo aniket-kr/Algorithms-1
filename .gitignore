@@ -1,0 +1,7 @@
+# IDE Files and Dirs
+.idea/
+Algorithms-1.iml
+
+# Compiled Files and Output Dirs
+*.class
+out/
