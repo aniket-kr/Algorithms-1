@@ -65,7 +65,7 @@ com.company.aniketkr.algorithms1
         |     `-- *ProbingHashMap
         |
         `-- symbol
-              |-- *UnorderedMap
+              |-- UnorderedMap
               |-- *OrderedMap
               `-- *RedBlackMap
 ```

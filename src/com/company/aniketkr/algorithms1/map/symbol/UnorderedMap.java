@@ -8,18 +8,40 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Function;
 
-
+/**
+ * Implement the {@link Map} interface using internal resizing array. The keys
+ * are not required to define any other method except
+ * {@link Object#equals(Object obj) equals} method.
+ *
+ * @param <K> The type of key in the map. The key MUST override {@code equals}
+ *            method. Keys can be {code null}.
+ * @param <V> The type of value to be associated with the keys in the map.
+ * @author Aniket Kumar
+ */
 public class UnorderedMap<K, V> implements Map<K, V> {
-  private static final int INIT_CAPACITY = 4;
+  private static final int INIT_CAPACITY = 4;  // default init capacity of map
 
-  private K[] keys;
-  private V[] values;
-  private int length = 0;
+  private K[] keys;  // array holding keys of the map
+  private V[] values;  // array holding values of the map
+  private int length = 0;  // number of key-value pairs in the map
 
+  /**
+   * Instantiate an empty UnorderedMap instance which has the capacity
+   * to hold {@value INIT_CAPACITY} entries before having to resize.
+   */
   public UnorderedMap() {
     this(INIT_CAPACITY);
   }
 
+  /**
+   * Instantiate an empty UnorderedMap instance which has the capacity
+   * to hold {@code capacity} entries before having to resize.
+   *
+   * @param capacity The desired number of entries that the map should be able
+   *                 to hold without needing to resize.
+   * @throws IllegalArgumentException If {@code capacity} is less than or equal
+   *                                  to {code 0}.
+   */
   @SuppressWarnings("unchecked")
   public UnorderedMap(int capacity) {
     if (capacity <= 0) {
@@ -211,6 +233,12 @@ public class UnorderedMap<K, V> implements Map<K, V> {
    * Section: Helper Methods and Classes
    ****************************************************************************/
 
+  /**
+   * Find the index at which {@code key} is located in the {@code keys} array.
+   *
+   * @param key The key to look for.
+   * @return The index at which {@code key} is at, or {@code -1} if not present.
+   */
   private int findKeyIndex(K key) {
     for (int i = 0; i < length; i++) {
       if (Objects.equals(key, keys[i])) {
@@ -222,6 +250,13 @@ public class UnorderedMap<K, V> implements Map<K, V> {
     return -1;
   }
 
+  /**
+   * Resize the internal {@code keys} and {@code values} arrays to the given
+   * new size {@code newSize}. Resizing is achieved by copying over the elements
+   * from the original arrays to the new arrays.
+   *
+   * @param newSize The new desired size of the internal arrays.
+   */
   @SuppressWarnings("unchecked")
   private void resize(int newSize) {
     K[] newKeys = (K[]) new Object[newSize];
