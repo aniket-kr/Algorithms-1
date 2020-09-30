@@ -9,60 +9,64 @@ Package Structure
 -----------------
 The implementations in the project have been organised in packages. A
 _textual directory map_ of the project looks like the following:
+
+> Files with incomplete implementations have been marked with
+> an asterisk `*`.
+
 ```
 com.company.aniketkr.algorithms1
-  |-- WeightedQuickUnion
+  |-- *WeightedQuickUnion
   |
   |-- collection
-  |     |-- Collection (interface)
+  |     |-- *Collection (interface)
   |     |
   |     |-- list
-  |     |     |-- List (interface)
-  |     |     |-- ArrayList
-  |     |     `-- LinkedList
+  |     |     |-- *List (interface)
+  |     |     |-- *ArrayList
+  |     |     `-- *LinkedList
   |     |
   |     |-- queue
-  |     |     |-- Queue (interface)
-  |     |     |-- ArrayQueue
-  |     |     `-- LinkedQueue
+  |     |     |-- *Queue (interface)
+  |     |     |-- *ArrayQueue
+  |     |     `-- *LinkedQueue
   |     |
   |     |-- stack
-  |     |     |-- Stack (interface)
-  |     |     |-- ArrayStack
-  |     |     `-- LinkedStack
+  |     |     |-- *Stack (interface)
+  |     |     |-- *ArrayStack
+  |     |     `-- *LinkedStack
   |     |
   |     |-- dequeue
-  |     |     |-- Deque (interface)
-  |     |     |-- ArrayDeque
-  |     |     `-- LinkedDeque
+  |     |     |-- *Deque (interface)
+  |     |     |-- *ArrayDeque
+  |     |     `-- *LinkedDeque
   |     |
   |     `-- priorityqueue
-  |           |-- PriorityQueue (interface)
-  |           `-- HeapPriorityQueue
+  |           |-- *PriorityQueue (interface)
+  |           `-- *HeapPriorityQueue
   |
   |-- sorting
   |     |
-  |     |-- Sorter (package-private abstract)
-  |     |-- Selection
-  |     |-- Bubble
-  |     |-- Insertion
-  |     |-- Shell
-  |     |-- Merge
-  |     |-- Quick
-  |     `-- Heap
+  |     |-- *Sorter (package-private abstract)
+  |     |-- *Selection
+  |     |-- *Bubble
+  |     |-- *Insertion
+  |     |-- *Shell
+  |     |-- *Merge
+  |     |-- *Quick
+  |     `-- *Heap
   |
   `-- map
-        |-- Map (interface)
-        |-- OrderMap (interface)
+        |-- *Map (interface)
+        |-- *OrderMap (interface)
         |
         |-- hash
-        |     |-- ChainingHashMap
-        |     `-- ProbingHashMap
+        |     |-- *ChainingHashMap
+        |     `-- *ProbingHashMap
         |
         `-- symbol
-              |-- UnorderedMap
-              |-- OrderedMap
-              `-- RedBlackMap
+              |-- *UnorderedMap
+              |-- *OrderedMap
+              `-- *RedBlackMap
 ```
 
 Code Style
