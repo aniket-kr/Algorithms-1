@@ -300,7 +300,7 @@ public interface OrderMap<K, V> extends Map<K, V> {
    * @see Entry
    */
   @Override
-  Iterable<Entry<? super K, ? super V>> entries();
+  Iterable<Entry<? extends K, ? extends V>> entries();
 
   /**
    * Iterate over "entries" in the map whose keys have priorities that fall in
@@ -315,5 +315,5 @@ public interface OrderMap<K, V> extends Map<K, V> {
    * @throws IllegalArgumentException If either {@code low} or {@code high} is
    *                                  {@code null}.
    */
-  Iterable<Entry<? super K, ? super V>> entries(K low, K high);
+  Iterable<Entry<? extends K, ? extends V>> entries(K low, K high);
 }
