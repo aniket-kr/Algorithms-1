@@ -3,25 +3,25 @@ package com.company.aniketkr.algorithms1.map;
 import java.util.Objects;
 
 /**
- * Represents an item in a map, like {@link Map}. An "item" is defined as a
+ * Represents an entry in a map, like {@link Map}. An "entry" is defined as a
  * single key-value pair.
  *
  * @param <K> The type of key.
  * @param <V> The type of value to associate to the key.
  */
-public final class Item<K, V> {
+public final class Entry<K, V> {
   private final K key;
   private final V value;
 
   /**
-   * Creates a new immutable key-value pair Item object.
+   * Creates a new immutable key-value pair Entry object.
    * Assumes nothing about the key and the value types - they can also be
    * {@code null}.
    *
    * @param key   The key in the key-value pair.
    * @param value The value to associate with given key.
    */
-  public Item(K key, V value) {
+  public Entry(K key, V value) {
     this.key = key;
     this.value = value;
   }
@@ -42,16 +42,16 @@ public final class Item<K, V> {
     if (this == obj) {
       return true;
     }
-    if (!(obj instanceof Item)) {
+    if (!(obj instanceof Entry)) {
       return false;
     }
 
-    Item<?, ?> item = (Item<?, ?>) obj;
+    Entry<?, ?> entry = (Entry<?, ?>) obj;
 
-    if (!Objects.equals(this.key, item.key)) {
+    if (!Objects.equals(this.key, entry.key)) {
       return false;
     }
-    return Objects.equals(this.value, item.value);
+    return Objects.equals(this.value, entry.value);
   }
 
   @Override
@@ -60,7 +60,7 @@ public final class Item<K, V> {
   }
 
   /* **************************************************************************
-   * Section: Item Methods
+   * Section: Entry Methods
    ************************************************************************** */
 
   public K key() {

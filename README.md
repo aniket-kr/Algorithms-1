@@ -58,7 +58,7 @@ com.company.aniketkr.algorithms1
   `-- map
         |-- *Map (interface)
         |-- *OrderMap (interface)
-        |-- *Item (immutable helper type)
+        |-- *Entry (immutable helper type)
         |
         |-- hash
         |     |-- *ChainingHashMap
