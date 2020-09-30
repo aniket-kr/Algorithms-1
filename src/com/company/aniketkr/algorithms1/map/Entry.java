@@ -8,6 +8,7 @@ import java.util.Objects;
  *
  * @param <K> The type of key.
  * @param <V> The type of value to associate to the key.
+ * @author Aniket Kumar
  */
 public final class Entry<K, V> {
   private final K key;

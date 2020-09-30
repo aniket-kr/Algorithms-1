@@ -8,6 +8,7 @@ import java.util.function.Function;
  *
  * @param <K> The type of key in the map.
  * @param <V> The type of value that will be associated with keys in the map.
+ * @author Aniket Kumar
  */
 public interface Map<K, V> {
 
