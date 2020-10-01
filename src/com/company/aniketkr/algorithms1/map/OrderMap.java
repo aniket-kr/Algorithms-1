@@ -248,8 +248,8 @@ public interface OrderMap<K, V> extends Map<K, V> {
    *                    argument and returns a deepcopy of the value.
    * @return A deepcopy of this map.
    * @throws IllegalArgumentException If either {@code keyCopyFn} or
-   *                                  {@code valueCopyFn} is {@code null}. Also
-   *                                  when {@code null} is returned by
+   *                                  {@code valueCopyFn} is {@code null}.
+   * @throws NullPointerException     If {@code null} is returned by
    *                                  {@code keyCopyFn}.
    */
   @Override
