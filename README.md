@@ -15,7 +15,7 @@ _textual directory map_ of the project looks like the following:
 
 ```
 com.company.aniketkr.algorithms1
-  |-- *WeightedQuickUnion
+  |-- WeightedQuickUnion
   |
   |-- collection
   |     |-- *Collection (interface)
