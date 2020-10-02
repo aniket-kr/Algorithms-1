@@ -2,9 +2,7 @@ package com.company.aniketkr.algorithms1.map.symbol;
 
 import com.company.aniketkr.algorithms1.map.Entry;
 import com.company.aniketkr.algorithms1.map.OrderMap;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.function.Function;
 
 public class OrderedMap<K, V> implements OrderMap<K, V> {
@@ -47,11 +45,7 @@ public class OrderedMap<K, V> implements OrderMap<K, V> {
 
   @Override
   public String toString() {
-    return "OrderedMap{"
-        + "length=" + length
-        + ", keys=" + Arrays.toString(keys)
-        + ", values=" + Arrays.toString(values)
-        + '}';
+    return "OrderedMap{" + "length=" + length + ", keys=" + Arrays.toString(keys) + ", values=" + Arrays.toString(values) + '}';
   }
 
   /* **************************************************************************
@@ -179,42 +173,87 @@ public class OrderedMap<K, V> implements OrderMap<K, V> {
 
   @Override
   public K min() {
-    return null;
+    if (isEmpty()) {
+      throw new NoSuchElementException("can't find minimum, map is empty");
+    }
+
+    return keys[0];
   }
 
   @Override
   public K max() {
-    return null;
+    if (isEmpty()) {
+      throw new NoSuchElementException("can't find maximum, map is empty");
+    }
+
+    return keys[length - 1];
   }
 
   @Override
   public K floor(K key) {
-    return null;
+    if (key == null) {
+      throw new IllegalArgumentException("param 'key' cannot be null");
+    }
+
+    int i = floorIndex(key);
+    return (i < 0) ? null : keys[i];
   }
 
   @Override
   public K ceil(K key) {
-    return null;
+    if (key == null) {
+      throw new IllegalArgumentException("param 'key' cannot be null");
+    }
+
+    int i = ceilIndex(key);
+    return (i < 0) ? null : keys[i];
   }
 
   @Override
   public int rank(K key) {
-    return 0;
+    if (key == null) {
+      throw new IllegalArgumentException("param 'key' cannot be null");
+    }
+
+    int i = search(key);
+    // If key exists, index is rank. Else normalize index.
+    return (i >= 0) ? i : -(i + 1);
   }
 
   @Override
   public K select(int rank) {
-    return null;
+    Objects.checkIndex(rank, size());
+
+    return keys[rank];
   }
 
   @Override
   public void deleteMin() {
+    if (isEmpty()) {
+      throw new NoSuchElementException("can't delete-minimum from empty map");
+    }
 
+    shift(1, LEFT);
+    keys[--length] = null;
+    values[length] = null;
+
+    if (size() == keys.length / 4) {
+      resize(keys.length / 2);
+    }
   }
 
   @Override
   public void deleteMax() {
+    if (isEmpty()) {
+      throw new NoSuchElementException("can't delete-maximum from empty map");
+    }
 
+    keys[--length] = null;
+    values[length] = null;
+
+    if (size() == keys.length / 4) {
+      resize(keys.length / 2);
+    }
   }
 
   /* **************************************************************************
@@ -222,13 +261,34 @@ public class OrderedMap<K, V> implements OrderMap<K, V> {
    ************************************************************************** */
 
   @Override
-  public OrderMap<K, V> copy() {
-    return null;
+  public OrderedMap<K, V> copy() {
+    OrderedMap<K, V> cp = new OrderedMap<>((size() >= 2) ? (size() * 2) : INIT_CAPACITY, comp);
+    System.arraycopy(this.keys, 0, cp.keys, 0, this.size());
+    System.arraycopy(this.values, 0, cp.values, 0, this.size());
+    cp.length = this.length;
+
+    return cp;
   }
 
   @Override
-  public OrderMap<K, V> deepcopy(Function<? super K, K> keyCopyFn, Function<? super V, V> valueCopyFn) {
-    return null;
+  public OrderedMap<K, V> deepcopy(Function<? super K, K> keyCopyFn, //
+                                   Function<? super V, V> valueCopyFn) {
+    if (keyCopyFn == null) {
+      throw new IllegalArgumentException("param 'keyCopyFn' cannot be null");
+    }
+    if (valueCopyFn == null) {
+      throw new IllegalArgumentException("param 'valueCopyFn' cannot be null");
+    }
+
+    keyCopyFn = keyCopyFn.andThen(key -> //
+        Objects.requireNonNull(key, "'keyCopyFn' returned null"));
+
+    OrderedMap<K, V> cp = new OrderedMap<>((size() >= 2) ? (size() * 2) : INIT_CAPACITY, comp);
+    for (Entry<? extends K, ? extends V> kv : this.entries()) {
+      cp.put(keyCopyFn.apply(kv.key()), valueCopyFn.apply(kv.value()));
+    }
+
+    return cp;
   }
 
   /* **************************************************************************
@@ -237,27 +297,41 @@ public class OrderedMap<K, V> implements OrderMap<K, V> {
 
   @Override
   public Iterable<K> keys() {
-    return null;
+    return () -> new MapIterator<>(keys, 0, length - 1);
   }
 
   @Override
   public Iterable<K> keys(K low, K high) {
-    return null;
+    if (low == null) {
+      throw new IllegalArgumentException("param 'low' cannot be null");
+    }
+    if (high == null) {
+      throw new IllegalArgumentException("param 'high' cannot be null");
+    }
+
+    return () -> new MapIterator<>(keys, ceilIndex(low), floorIndex(high));
   }
 
   @Override
   public Iterable<V> values() {
-    return null;
+    return () -> new MapIterator<>(values, 0, length - 1);
   }
 
   @Override
   public Iterable<Entry<? extends K, ? extends V>> entries() {
-    return null;
+    return () -> new EntryIterator<>(keys, values, 0, length - 1);
   }
 
   @Override
   public Iterable<Entry<? extends K, ? extends V>> entries(K low, K high) {
-    return null;
+    if (low == null) {
+      throw new IllegalArgumentException("param 'low' cannot be null");
+    }
+    if (high == null) {
+      throw new IllegalArgumentException("param 'high' cannot be null");
+    }
+
+    return () -> new EntryIterator<>(keys, values, ceilIndex(low), floorIndex(high));
   }
 
   /* **************************************************************************
@@ -282,5 +356,83 @@ public class OrderedMap<K, V> implements OrderMap<K, V> {
   private void shift(int fromIndex, int direction) {
     System.arraycopy(keys, fromIndex, keys, fromIndex + direction, size() - fromIndex);
     System.arraycopy(values, fromIndex, values, fromIndex + direction, size() - fromIndex);
+  }
+
+  private int floorIndex(K key) {
+    int i = search(key);
+    if (i >= 0) {
+      // key exists in the map
+      return i;
+    }
+
+    // when key doesn't exist
+    i = -(i + 1);  // normalize index
+    return (i == 0) ? -1 : i - 1;
+  }
+
+  private int ceilIndex(K key) {
+    int i = search(key);
+    if (i >= 0) {
+      // key exists in the map
+      return i;
+    }
+
+    // when key doesn't exist
+    i = -(i + 1);  // normalize index
+    return (i == size()) ? -1 : i;
+  }
+
+  private static class MapIterator<T> implements Iterator<T> {
+    private final T[] arr;
+    private final int stop;
+    private int current;
+
+    private MapIterator(T[] array, int startInclusive, int stopInclusive) {
+      arr = array;
+      this.current = startInclusive >= 0 ? startInclusive : -1;
+      this.stop = (stopInclusive >= 0) ? stopInclusive : -2;
+    }
+
+    @Override
+    public boolean hasNext() {
+      return current <= stop;
+    }
+
+    @Override
+    public T next() {
+      if (!hasNext()) {
+        throw new NoSuchElementException("iterator depleted");
+      }
+
+      return arr[current++];
+    }
+  }
+
+  private static class EntryIterator<K, V> implements Iterator<Entry<? extends K, ? extends V>> {
+    private final K[] keys;
+    private final V[] values;
+    private final int stop;
+    private int current;
+
+    private EntryIterator(K[] keys, V[] values, int startInclusive, int stopInclusive) {
+      this.keys = keys;
+      this.values = values;
+      this.current = startInclusive >= 0 ? startInclusive : -1;
+      this.stop = (stopInclusive >= 0) ? stopInclusive : -2;
+    }
+
+    @Override
+    public boolean hasNext() {
+      return current <= stop;
+    }
+
+    @Override
+    public Entry<? extends K, ? extends V> next() {
+      if (!hasNext()) {
+        throw new NoSuchElementException("iterator depleted");
+      }
+
+      return new Entry<>(keys[current], values[current++]);
+    }
   }
 }
