@@ -1,5 +1,6 @@
 package com.company.aniketkr.algorithms1.map;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -33,8 +34,22 @@ public final class Entry<K, V> {
 
   @Override
   public int hashCode() {
-    int hash = (key != null) ? key.hashCode() : 0;
-    hash = 31 * hash + ((value != null) ? value.hashCode() : 0);
+    int hash = 0;
+
+    // hash of key
+    if (key instanceof Object[]) {
+      hash += 31 * Arrays.deepHashCode((Object[]) key);
+    } else {
+      hash += (key != null) ? 31 * key.hashCode() : 0;
+    }
+
+    // hash of value
+    if (value instanceof Object[]) {
+      hash += 31 * Arrays.deepHashCode((Object[]) value);
+    } else {
+      hash += (value != null) ? 31 * value.hashCode() : 0;
+    }
+
     return hash;
   }
 
@@ -49,15 +64,20 @@ public final class Entry<K, V> {
 
     Entry<?, ?> entry = (Entry<?, ?>) obj;
 
-    if (!Objects.equals(this.key, entry.key)) {
+    if (!Objects.deepEquals(this.key, entry.key)) {
       return false;
     }
-    return Objects.equals(this.value, entry.value);
+    return Objects.deepEquals(this.value, entry.value);
   }
 
   @Override
   public String toString() {
-    return String.format("(%s: %s)", key, value);
+    String keyS;
+    String valueS;
+    keyS = (key instanceof Object[]) ? Arrays.deepToString((Object[]) key) : key.toString();
+    valueS = (value instanceof Object[]) ? Arrays.deepToString((Object[]) value) : value.toString();
+
+    return String.format("%s: %s", keyS, valueS);
   }
 
   /* **************************************************************************
