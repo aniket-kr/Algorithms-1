@@ -27,7 +27,7 @@ import java.util.function.Function;
  *            map. This can be {@code null}.
  * @author Aniket Kumar
  */
-public class OrderedMap<K, V> implements OrderMap<K, V> {
+public final class OrderedMap<K, V> implements OrderMap<K, V> {
   private static final int INIT_CAPACITY = 4;  // default capacity of map
   private static final byte LEFT = -1;  // helper for `shift` method
   private static final byte RIGHT = 1;  // helper for `shift` method

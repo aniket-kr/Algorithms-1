@@ -20,7 +20,7 @@ import java.util.function.Function;
  * @param <V> The type of value to be associated with the keys in the map.
  * @author Aniket Kumar
  */
-public class UnorderedMap<K, V> implements Map<K, V> {
+public final class UnorderedMap<K, V> implements Map<K, V> {
   private static final int INIT_CAPACITY = 4;  // default init capacity of map
 
   private K[] keys;  // array holding keys of the map
