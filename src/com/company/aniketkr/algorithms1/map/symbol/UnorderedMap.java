@@ -58,22 +58,50 @@ public class UnorderedMap<K, V> implements Map<K, V> {
 
   @Override
   public int hashCode() {
-    // TODO: implementation of hashCode()
-    return super.hashCode();
+    long hash = 0L;
+    for (Entry<K, V> entry : this.entries()) {
+      hash += entry.hashCode();
+    }
+
+    return (int) (hash % Integer.MAX_VALUE);
   }
 
   @Override
   public boolean equals(Object obj) {
-    // TODO: job for later.
-    return super.equals(obj);
+    if (this == obj) {
+      return true;
+    }
+    if (obj instanceof OrderMap) {
+      return obj.equals(this);
+    }
+    if (!(obj instanceof Map)) {
+      return false;
+    }
+    Map<?, ?> map = (Map<?, ?>) obj;
+    if (map.size() != this.size()) {
+      return false;
+    }
+
+    // compare all elements of two orderless maps - two instances of Map
+    return mapEquals(map);
   }
 
-  private boolean equals(OrderMap<?, ?> orderMap) {
-    return false; // placeholder
-  }
+  @SuppressWarnings("unchecked")
+  private boolean mapEquals(Map<?, ?> map) {
+    try {
+      for (Entry<?, ?> entry : map.entries()) {
+        if (!Objects.deepEquals(entry.value(), this.get((K) entry.key()))) {
+          // at least one key-value pair exists with same key but different values
+          return false;
+        }
+      }
+    } catch (ClassCastException | NoSuchElementException ok) {
+      // ClassCastException     -> keys of the maps are not interconvertible
+      // NoSuchElementException -> key not found in the map
+      return false;
+    }
 
-  private boolean equals(Map<?, ?> map) {
-    return false;  // placeholder
+    return true;  // all key-value pairs are equal
   }
 
   @Override
@@ -83,13 +111,7 @@ public class UnorderedMap<K, V> implements Map<K, V> {
     }
 
     StringBuilder sb = new StringBuilder("[").append(size()).append("]{ ");
-    this.entries().forEach(kv -> sb
-        .append(kv.key())
-        .append(": ")
-        .append(kv.value())
-        .append(", ")
-    );
-
+    this.entries().forEach(entry -> sb.append(entry).append(", "));
     sb.setLength(sb.length() - 2);
     return sb.append(" }").toString();
   }
@@ -195,7 +217,7 @@ public class UnorderedMap<K, V> implements Map<K, V> {
   }
 
   @Override
-  public UnorderedMap<K, V> deepcopy(Function<? super K, K> keyCopyFn,
+  public UnorderedMap<K, V> deepcopy(Function<? super K, K> keyCopyFn,  //
                                      Function<? super V, V> valueCopyFn) {
     if (keyCopyFn == null || valueCopyFn == null) {
       throw new IllegalArgumentException("at least one argument to deepcopy() is null");
@@ -203,8 +225,8 @@ public class UnorderedMap<K, V> implements Map<K, V> {
 
     UnorderedMap<K, V> cp = new UnorderedMap<>((size() >= 2) ? (size() * 2) : INIT_CAPACITY);
     // deepcopy all the pairs
-    this.entries().forEach(kv -> {
-      cp.put(keyCopyFn.apply(kv.key()), valueCopyFn.apply(kv.value()));
+    this.entries().forEach(entry -> {
+      cp.put(keyCopyFn.apply(entry.key()), valueCopyFn.apply(entry.value()));
     });
 
     return cp;
@@ -225,7 +247,7 @@ public class UnorderedMap<K, V> implements Map<K, V> {
   }
 
   @Override
-  public Iterable<Entry<? extends K, ? extends V>> entries() {
+  public Iterable<Entry<K, V>> entries() {
     return () -> new EntryIterator<>(keys, values, length - 1);
   }
 
@@ -259,18 +281,18 @@ public class UnorderedMap<K, V> implements Map<K, V> {
    */
   @SuppressWarnings("unchecked")
   private void resize(int newSize) {
-    K[] newKeys = (K[]) new Object[newSize];
-    System.arraycopy(keys, 0, newKeys, 0, size());
-    keys = newKeys;
-
     V[] newValues = (V[]) new Object[newSize];
     System.arraycopy(values, 0, newValues, 0, size());
     values = newValues;
+
+    K[] newKeys = (K[]) new Object[newSize];
+    System.arraycopy(keys, 0, newKeys, 0, size());
+    keys = newKeys;
   }
 
   private void shiftLeftByOnePosition(int fromIndex) {
-    System.arraycopy(keys, fromIndex, keys, fromIndex - 1, size() - fromIndex);
     System.arraycopy(values, fromIndex, values, fromIndex - 1, size() - fromIndex);
+    System.arraycopy(keys, fromIndex, keys, fromIndex - 1, size() - fromIndex);
   }
 
   private static class MapIterator<T> implements Iterator<T> {
@@ -298,7 +320,7 @@ public class UnorderedMap<K, V> implements Map<K, V> {
     }
   }
 
-  private static class EntryIterator<K, V> implements Iterator<Entry<? extends K, ? extends V>> {
+  private static class EntryIterator<K, V> implements Iterator<Entry<K, V>> {
     private final K[] keys;
     private final V[] values;
     private final int stop;
@@ -316,7 +338,7 @@ public class UnorderedMap<K, V> implements Map<K, V> {
     }
 
     @Override
-    public Entry<? extends K, ? extends V> next() {
+    public Entry<K, V> next() {
       if (!hasNext()) {
         throw new NoSuchElementException();
       }

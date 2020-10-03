@@ -1,8 +1,13 @@
 package com.company.aniketkr.algorithms1.map.symbol;
 
 import com.company.aniketkr.algorithms1.map.Entry;
+import com.company.aniketkr.algorithms1.map.Map;
 import com.company.aniketkr.algorithms1.map.OrderMap;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.function.Function;
 
 public class OrderedMap<K, V> implements OrderMap<K, V> {
@@ -44,8 +49,70 @@ public class OrderedMap<K, V> implements OrderMap<K, V> {
    ************************************************************************** */
 
   @Override
+  public int hashCode() {
+    long hash = 0L;
+    for (Entry<K, V> entry : this.entries()) {
+      hash += entry.hashCode();
+    }
+
+    return (int) (hash % Integer.MAX_VALUE);
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (!(obj instanceof Map)) {
+      return false;
+    }
+    Map<?, ?> map = (Map<?, ?>) obj;
+    if (map.size() != this.size()) {
+      return false;
+    }
+
+    return (map instanceof OrderMap) ? orderMapEquals((OrderMap<?, ?>) map) : mapEquals(map);
+  }
+
+  @SuppressWarnings("unchecked")
+  private boolean mapEquals(Map<?, ?> map) {
+    try {
+      for (Entry<?, ?> entry : map.entries()) {
+        if (!Objects.deepEquals(entry.value(), this.get((K) entry.key()))) {
+          // the values corresponding to a particular key don't match
+          return false;
+        }
+      }
+      return true;  // the maps have equal entries
+
+    } catch (ClassCastException | IllegalArgumentException | NoSuchElementException ok) {
+      // ClassCastException       -> keys of the maps are not interconvertible
+      // IllegalArgumentException -> key from UnorderedMap `map` must be null
+      // NoSuchElementException   -> key not found in the map
+      return false;
+    }
+  }
+
+  private boolean orderMapEquals(OrderMap<?, ?> orderMap) {
+    Iterator<Entry<K, V>> itor = this.entries().iterator();
+    for (Entry<?, ?> entry : orderMap.entries()) {
+      if (!entry.equals(itor.next())) {
+        return false;
+      }
+    }
+    return false;
+  }
+
+  @Override
   public String toString() {
-    return "OrderedMap{" + "length=" + length + ", keys=" + Arrays.toString(keys) + ", values=" + Arrays.toString(values) + '}';
+    if (isEmpty()) {
+      return "[0]{ }";
+    }
+
+    StringBuilder sb = new StringBuilder("[").append(size()).append("]{ ");
+    this.entries().forEach(entry -> sb.append(entry).append(", "));
+    sb.setLength(sb.length() - 2);
+    return sb.append(" }").toString();
   }
 
   /* **************************************************************************
@@ -318,12 +385,12 @@ public class OrderedMap<K, V> implements OrderMap<K, V> {
   }
 
   @Override
-  public Iterable<Entry<? extends K, ? extends V>> entries() {
+  public Iterable<Entry<K, V>> entries() {
     return () -> new EntryIterator<>(keys, values, 0, length - 1);
   }
 
   @Override
-  public Iterable<Entry<? extends K, ? extends V>> entries(K low, K high) {
+  public Iterable<Entry<K, V>> entries(K low, K high) {
     if (low == null) {
       throw new IllegalArgumentException("param 'low' cannot be null");
     }
@@ -408,7 +475,7 @@ public class OrderedMap<K, V> implements OrderMap<K, V> {
     }
   }
 
-  private static class EntryIterator<K, V> implements Iterator<Entry<? extends K, ? extends V>> {
+  private static class EntryIterator<K, V> implements Iterator<Entry<K, V>> {
     private final K[] keys;
     private final V[] values;
     private final int stop;
@@ -427,7 +494,7 @@ public class OrderedMap<K, V> implements OrderMap<K, V> {
     }
 
     @Override
-    public Entry<? extends K, ? extends V> next() {
+    public Entry<K, V> next() {
       if (!hasNext()) {
         throw new NoSuchElementException("iterator depleted");
       }
