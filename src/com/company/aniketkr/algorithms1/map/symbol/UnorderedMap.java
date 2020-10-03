@@ -3,10 +3,12 @@ package com.company.aniketkr.algorithms1.map.symbol;
 import com.company.aniketkr.algorithms1.map.Entry;
 import com.company.aniketkr.algorithms1.map.Map;
 import com.company.aniketkr.algorithms1.map.OrderMap;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Function;
+
 
 /**
  * Implement the {@link Map} interface using internal resizing array. The keys
@@ -66,26 +68,34 @@ public class UnorderedMap<K, V> implements Map<K, V> {
     return (int) (hash % Integer.MAX_VALUE);
   }
 
+  /**
+   * Check if the given object {@code obj} is "deeply" equal to "this" map.
+   * Takes quadratic time in the worst case.
+   *
+   * @return {@code true} if all the key-value pairs (or "entries") in both
+   *     the maps are the same, {@code false} otherwise.
+   */
   @Override
   public boolean equals(Object obj) {
+    boolean result = false;
     if (this == obj) {
-      return true;
-    }
-    if (obj instanceof OrderMap) {
-      return obj.equals(this);
-    }
-    if (!(obj instanceof Map)) {
-      return false;
-    }
-    Map<?, ?> map = (Map<?, ?>) obj;
-    if (map.size() != this.size()) {
-      return false;
+      result = true;
+    } else if (obj instanceof OrderMap) {
+      result = obj.equals(this);
+    } else if (obj instanceof Map) {
+      Map<?, ?> map = (Map<?, ?>) obj;
+      if (map.size() == this.size()) {// compare all elements of two orderless maps - two instances of Map
+        result = mapEquals(map);
+      }
     }
 
-    // compare all elements of two orderless maps - two instances of Map
-    return mapEquals(map);
+    return result;
   }
 
+  /**
+   * Compare all the entries in this 'unordered-map' with another 'unordered-map'
+   * and check if they are equal. Takes quadratic time in the worst case.
+   */
   @SuppressWarnings("unchecked")
   private boolean mapEquals(Map<?, ?> map) {
     try {
@@ -130,6 +140,10 @@ public class UnorderedMap<K, V> implements Map<K, V> {
     return size() == 0;
   }
 
+  /**
+   * {@inheritDoc}
+   * Takes constant time.
+   */
   @Override
   @SuppressWarnings("unchecked")
   public void clear() {
@@ -138,6 +152,10 @@ public class UnorderedMap<K, V> implements Map<K, V> {
     length = 0;
   }
 
+  /**
+   * {@inheritDoc}
+   * Takes linear time in both the average and the worst case.
+   */
   @Override
   public boolean contains(K key) {
     return findKeyIndex(key) >= 0;
@@ -147,6 +165,10 @@ public class UnorderedMap<K, V> implements Map<K, V> {
    * Section: Map Operations
    ************************************************************************** */
 
+  /**
+   * {@inheritDoc}
+   * Takes linear time to find the key.
+   */
   @Override
   public V get(K key) {
     int i = findKeyIndex(key);
@@ -155,15 +177,24 @@ public class UnorderedMap<K, V> implements Map<K, V> {
     }
 
     // `key` doesn't exist
-    throw new NoSuchElementException(String.format("key '%s' doesn't exist in the map", key));
+    String keyS = (key instanceof Object[]) ? Arrays.deepToString((Object[]) key) : key.toString();
+    throw new NoSuchElementException(String.format("key '%s' doesn't exist in the map", keyS));
   }
 
+  /**
+   * {@inheritDoc}
+   * Takes linear time to find the key.
+   */
   @Override
   public V get(K key, V fallback) {
     int i = findKeyIndex(key);
     return (i >= 0) ? values[i] : fallback;
   }
 
+  /**
+   * {@inheritDoc}
+   * It is a linear time operation in both average and worst case.
+   */
   @Override
   public boolean put(K key, V value) {
     int i = findKeyIndex(key);
@@ -183,6 +214,10 @@ public class UnorderedMap<K, V> implements Map<K, V> {
     return true;
   }
 
+  /**
+   * {@inheritDoc}
+   * This operation takes linear time in both average and worst case.
+   */
   @Override
   public boolean delete(K key) {
     int i = findKeyIndex(key);
@@ -236,16 +271,28 @@ public class UnorderedMap<K, V> implements Map<K, V> {
    * Section: Iteration Operations
    ************************************************************************** */
 
+  /**
+   * {@inheritDoc}
+   * The iterable takes constant extra space and time to construct.
+   */
   @Override
   public Iterable<K> keys() {
     return () -> new MapIterator<>(keys, length - 1);
   }
 
+  /**
+   * {@inheritDoc}
+   * The iterable takes constant extra space and time to construct.
+   */
   @Override
   public Iterable<V> values() {
     return () -> new MapIterator<>(values, length - 1);
   }
 
+  /**
+   * {@inheritDoc}
+   * The iterable takes constant extra space and time to construct.
+   */
   @Override
   public Iterable<Entry<K, V>> entries() {
     return () -> new EntryIterator<>(keys, values, length - 1);
@@ -257,6 +304,7 @@ public class UnorderedMap<K, V> implements Map<K, V> {
 
   /**
    * Find the index at which {@code key} is located in the {@code keys} array.
+   * The time taken by the operation is linear.
    *
    * @param key The key to look for.
    * @return The index at which {@code key} is at, or {@code -1} if not present.
@@ -275,7 +323,8 @@ public class UnorderedMap<K, V> implements Map<K, V> {
   /**
    * Resize the internal {@code keys} and {@code values} arrays to the given
    * new size {@code newSize}. Resizing is achieved by copying over the elements
-   * from the original arrays to the new arrays.
+   * from the original arrays to the new arrays. Expectedly, the operation is a
+   * linear time one.
    *
    * @param newSize The new desired size of the internal arrays.
    */
@@ -290,6 +339,12 @@ public class UnorderedMap<K, V> implements Map<K, V> {
     keys = newKeys;
   }
 
+  /**
+   * Shift the elements of both the key and value arrays over to the left
+   * by one position.
+   *
+   * @param fromIndex The index to start shifting elements from.
+   */
   private void shiftLeftByOnePosition(int fromIndex) {
     System.arraycopy(values, fromIndex, values, fromIndex - 1, size() - fromIndex);
     System.arraycopy(keys, fromIndex, keys, fromIndex - 1, size() - fromIndex);
