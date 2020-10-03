@@ -10,28 +10,80 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Function;
 
+
+/**
+ * Implement the {@link OrderMap} interface using internal resizing arrays. The
+ * arrays resize by a factor of 2. If nothing is specified during construction,
+ * the default capacity of the map is {@value INIT_CAPACITY}.
+ *
+ * <p>Certain methods of the class will throw {@link IllegalStateException} if
+ * the keys do not satisfy the condition of being comparable.</p>
+ *
+ * @param <K> The type of key in the map. This type must implement the
+ *            {@link Comparable} interface. If it does not, then a
+ *            {@link Comparator} must be provided at the time of construction.
+ *            Also keys have to be non-{@code null}.
+ * @param <V> The type of value that should be associated with the keys in the
+ *            map. This can be {@code null}.
+ * @author Aniket Kumar
+ */
 public class OrderedMap<K, V> implements OrderMap<K, V> {
-  private static final int INIT_CAPACITY = 4;
-  private static final byte LEFT = -1;
-  private static final byte RIGHT = 1;
+  private static final int INIT_CAPACITY = 4;  // default capacity of map
+  private static final byte LEFT = -1;  // helper for `shift` method
+  private static final byte RIGHT = 1;  // helper for `shift` method
 
   private final Comparator<K> comp;
   private int length = 0;
   private K[] keys;
   private V[] values;
 
+  /**
+   * Instantiate an empty OrderedMap instance that has capacity to hold
+   * {@value INIT_CAPACITY} key-value pairs (or "entries") before having to
+   * resize. It is assumed that the keys will be comparable using the
+   * {@link Comparable#compareTo(K)} method.
+   */
   public OrderedMap() {
     this(INIT_CAPACITY, null);
   }
 
+  /**
+   * Instantiate an empty OrderedMap instance that has capacity to hold
+   * {@code capacity} key-value pairs (or "entries") before having to
+   * resize. It is assumed that the keys will be comparable using the
+   * {@link Comparable#compareTo(K)} method.
+   *
+   * @param capacity The desired initial capacity of the map.
+   * @throws IllegalArgumentException If {@code capacity} is less than or equal
+   *                                  to {@code 0}.
+   */
   public OrderedMap(int capacity) {
     this(capacity, null);
   }
 
+  /**
+   * Instantiate an empty OrderedMap instance that has capacity to hold
+   * {@value INIT_CAPACITY} key-value pairs (or "entries") before having to
+   * resize. The keys will be compared using {@code comparator}, disregarding
+   * the {@link Comparable} implementation.
+   *
+   * @param comparator The comparator to use.
+   */
   public OrderedMap(Comparator<K> comparator) {
     this(INIT_CAPACITY, comparator);
   }
 
+  /**
+   * Instantiate an empty OrderedMap instance that has capacity to hold
+   * {@code capacity} key-value pairs (or "entries") before having to
+   * resize. The keys will be compared using {@code comparator}, disregarding
+   * the {@link Comparable} implementation.
+   *
+   * @param capacity   The desired initial capacity of the map.
+   * @param comparator The comparator to use.
+   * @throws IllegalArgumentException if {@code capacity} is less than or equal
+   *                                  to {@code 0}.
+   */
   @SuppressWarnings("unchecked")
   public OrderedMap(int capacity, Comparator<K> comparator) {
     if (capacity <= 0) {
@@ -58,22 +110,33 @@ public class OrderedMap<K, V> implements OrderMap<K, V> {
     return (int) (hash % Integer.MAX_VALUE);
   }
 
+  /**
+   * Check if this map is <em>deeply</em> equal to the given object.
+   * Takes time proportional to <code>nlog<sub>2</sub>(n)</code> in worst case.
+   *
+   * @param obj The object to check equality with.
+   * @return {@code true} if the entries (key-value pairs) in the two maps
+   *     are equal, {@code false} otherwise.
+   */
   @Override
   public boolean equals(Object obj) {
+    boolean result = false;
     if (this == obj) {
-      return true;
-    }
-    if (!(obj instanceof Map)) {
-      return false;
-    }
-    Map<?, ?> map = (Map<?, ?>) obj;
-    if (map.size() != this.size()) {
-      return false;
+      result = true;
+    } else if (obj instanceof Map) {
+      Map<?, ?> map = (Map<?, ?>) obj;
+      if (map.size() == this.size()) {
+        result = (map instanceof OrderMap) ? orderMapEquals((OrderMap<?, ?>) map) : mapEquals(map);
+      }
     }
 
-    return (map instanceof OrderMap) ? orderMapEquals((OrderMap<?, ?>) map) : mapEquals(map);
+    return result;
   }
 
+  /**
+   * Compares this order-map with some unordered-map. Takes time proportional to
+   * <code>&theta;(nlog(n))</code> in the worst case.
+   */
   @SuppressWarnings("unchecked")
   private boolean mapEquals(Map<?, ?> map) {
     try {
@@ -93,6 +156,10 @@ public class OrderedMap<K, V> implements OrderMap<K, V> {
     }
   }
 
+  /**
+   * Compares this order-map with another order-map. Takes time proportional
+   * to <code>&theta;(n)</code> in the worst case.
+   */
   private boolean orderMapEquals(OrderMap<?, ?> orderMap) {
     Iterator<Entry<K, V>> itor = this.entries().iterator();
     for (Entry<?, ?> entry : orderMap.entries()) {
@@ -129,6 +196,10 @@ public class OrderedMap<K, V> implements OrderMap<K, V> {
     return size() == 0;
   }
 
+  /**
+   * {@inheritDoc}
+   * Takes constant time.
+   */
   @Override
   @SuppressWarnings("unchecked")
   public void clear() {
@@ -137,6 +208,10 @@ public class OrderedMap<K, V> implements OrderMap<K, V> {
     values = (V[]) new Object[INIT_CAPACITY];
   }
 
+  /**
+   * {@inheritDoc}
+   * Takes logarithmic time.
+   */
   @Override
   public boolean contains(K key) {
     if (key == null) {
@@ -155,6 +230,10 @@ public class OrderedMap<K, V> implements OrderMap<K, V> {
    * Section: Map Operations
    ************************************************************************** */
 
+  /**
+   * {@inheritDoc}
+   * Takes logarithmic time for a successful search.
+   */
   @Override
   public V get(K key) {
     if (key == null) {
@@ -171,6 +250,10 @@ public class OrderedMap<K, V> implements OrderMap<K, V> {
     throw new NoSuchElementException(String.format("key '%s' doesn't exist in map", key));
   }
 
+  /**
+   * {@inheritDoc}
+   * Takes logarithmic time just like {@link #get(K)}.
+   */
   @Override
   public V get(K key, V fallback) {
     try {
@@ -181,6 +264,10 @@ public class OrderedMap<K, V> implements OrderMap<K, V> {
     }
   }
 
+  /**
+   * {@inheritDoc}
+   * Takes linear time in the both the average case and the worst case.
+   */
   @Override
   public boolean put(K key, V value) {
     if (key == null) {
@@ -209,6 +296,10 @@ public class OrderedMap<K, V> implements OrderMap<K, V> {
     return true;
   }
 
+  /**
+   * {@inheritDoc}
+   * Takes linear time in both average and worst case.
+   */
   @Override
   public boolean delete(K key) {
     if (key == null) {
@@ -238,6 +329,10 @@ public class OrderedMap<K, V> implements OrderMap<K, V> {
    * Section: OrderMap Operations
    ************************************************************************** */
 
+  /**
+   * {@inheritDoc}
+   * It is a constant time operation.
+   */
   @Override
   public K min() {
     if (isEmpty()) {
@@ -247,6 +342,10 @@ public class OrderedMap<K, V> implements OrderMap<K, V> {
     return keys[0];
   }
 
+  /**
+   * {@inheritDoc}
+   * It is a constant time operation.
+   */
   @Override
   public K max() {
     if (isEmpty()) {
@@ -256,6 +355,10 @@ public class OrderedMap<K, V> implements OrderMap<K, V> {
     return keys[length - 1];
   }
 
+  /**
+   * {@inheritDoc}
+   * Takes logarithmic time to find the floor.
+   */
   @Override
   public K floor(K key) {
     if (key == null) {
@@ -266,6 +369,10 @@ public class OrderedMap<K, V> implements OrderMap<K, V> {
     return (i < 0) ? null : keys[i];
   }
 
+  /**
+   * {@inheritDoc}
+   * Takes logarithmic time to find the ceiling.
+   */
   @Override
   public K ceil(K key) {
     if (key == null) {
@@ -276,6 +383,10 @@ public class OrderedMap<K, V> implements OrderMap<K, V> {
     return (i < 0) ? null : keys[i];
   }
 
+  /**
+   * {@inheritDoc}
+   * Takes logarithmic time to find the rank.
+   */
   @Override
   public int rank(K key) {
     if (key == null) {
@@ -287,6 +398,10 @@ public class OrderedMap<K, V> implements OrderMap<K, V> {
     return (i >= 0) ? i : -(i + 1);
   }
 
+  /**
+   * {@inheritDoc}
+   * It is a constant time operation.
+   */
   @Override
   public K select(int rank) {
     Objects.checkIndex(rank, size());
@@ -294,6 +409,10 @@ public class OrderedMap<K, V> implements OrderMap<K, V> {
     return keys[rank];
   }
 
+  /**
+   * {@inheritDoc}
+   * Always takes linear time.
+   */
   @Override
   public void deleteMin() {
     if (isEmpty()) {
@@ -309,6 +428,11 @@ public class OrderedMap<K, V> implements OrderMap<K, V> {
     }
   }
 
+  /**
+   * {@inheritDoc}
+   * This operation takes constant time in the best and linear time in the
+   * worst case.
+   */
   @Override
   public void deleteMax() {
     if (isEmpty()) {
@@ -362,11 +486,19 @@ public class OrderedMap<K, V> implements OrderMap<K, V> {
    * Section: Iteration Operations
    ************************************************************************** */
 
+  /**
+   * {@inheritDoc}
+   * The iterable takes constant extra space and time to construct.
+   */
   @Override
   public Iterable<K> keys() {
     return () -> new MapIterator<>(keys, 0, length - 1);
   }
 
+  /**
+   * {@inheritDoc}
+   * The iterable takes constant extra space and logarithmic to construct.
+   */
   @Override
   public Iterable<K> keys(K low, K high) {
     if (low == null) {
@@ -379,16 +511,28 @@ public class OrderedMap<K, V> implements OrderMap<K, V> {
     return () -> new MapIterator<>(keys, ceilIndex(low), floorIndex(high));
   }
 
+  /**
+   * {@inheritDoc}
+   * The iterable takes constant extra space and time to construct.
+   */
   @Override
   public Iterable<V> values() {
     return () -> new MapIterator<>(values, 0, length - 1);
   }
 
+  /**
+   * {@inheritDoc}
+   * The iterable takes constant extra space and time to construct.
+   */
   @Override
   public Iterable<Entry<K, V>> entries() {
     return () -> new EntryIterator<>(keys, values, 0, length - 1);
   }
 
+  /**
+   * {@inheritDoc}
+   * The iterable takes constant extra space and logarithmic time to construct.
+   */
   @Override
   public Iterable<Entry<K, V>> entries(K low, K high) {
     if (low == null) {
@@ -405,10 +549,34 @@ public class OrderedMap<K, V> implements OrderMap<K, V> {
    * Section: Helper Methods and Classes
    ************************************************************************** */
 
+  /**
+   * A wrapper function that wraps the excellent
+   * {@link Arrays#binarySearch(K[], int, int, K, Comparator)} to avoid
+   * repetition of code. Takes logarithmic time.
+   *
+   * @param key The non-{@code null} key to look for.
+   * @return The index at which {@code key} is located. If {@code key} doesn't
+   *     exist, then returns negative of the index at which the key should be
+   *     located, plus 1. For eg, if {@code key} should have been at index
+   *     {@code 5}, but does not exist, then will return {@code -6}.
+   */
   private int search(K key) {
-    return Arrays.binarySearch(keys, 0, length, key, comp);
+    try {
+      return Arrays.binarySearch(keys, 0, length, key, comp);
+    } catch (ClassCastException fatalException) {
+      throw new IllegalStateException("The Key type neither implements Comparable interface, nor "//
+          + "was a Comparator provided during time of construction");
+    }
   }
 
+  /**
+   * Resize the internal keys and values arrays to have length {@code newSize}.
+   * Takes time proportional to <code>&theta;(n)</code> and extra space linearly
+   * proportional to {@code newSize}. {@code n} here is the {@link #size()} of
+   * the map.
+   *
+   * @param newSize The new desired capacity of the map.
+   */
   @SuppressWarnings("unchecked")
   private void resize(int newSize) {
     K[] newKeys = (K[]) new Object[newSize];
@@ -420,11 +588,28 @@ public class OrderedMap<K, V> implements OrderMap<K, V> {
     values = newValues;
   }
 
+  /**
+   * Shift the elements {@link #LEFT} or {@link #RIGHT} in both key and value
+   * arrays. Helper method for other map operations. Note that the method assumes
+   * that the internal arrays have sufficient space to be shift elements. Takes
+   * time linearly proportional to {@code size() - fromIndex}.
+   *
+   * @param fromIndex The index to start shifting elements from.
+   * @param direction The direction to shift elements towards. Either
+   *                  {@link #LEFT} or {@link #RIGHT}.
+   */
   private void shift(int fromIndex, int direction) {
     System.arraycopy(keys, fromIndex, keys, fromIndex + direction, size() - fromIndex);
     System.arraycopy(values, fromIndex, values, fromIndex + direction, size() - fromIndex);
   }
 
+  /**
+   * Find the index at which the floor of a given key is located. Takes
+   * logarithmic time.
+   *
+   * @param key The non-{@code null} key.
+   * @return {@code -1} of floor doesn't exist. Otherwise the index.
+   */
   private int floorIndex(K key) {
     int i = search(key);
     if (i >= 0) {
@@ -437,6 +622,13 @@ public class OrderedMap<K, V> implements OrderMap<K, V> {
     return (i == 0) ? -1 : i - 1;
   }
 
+  /**
+   * Find the index at which the ceiling of a given key is located. Takes
+   * logarithmic time.
+   *
+   * @param key The non-{@code null} key.
+   * @return {@code -1} of ceiling doesn't exist. Otherwise the index.
+   */
   private int ceilIndex(K key) {
     int i = search(key);
     if (i >= 0) {
@@ -456,6 +648,10 @@ public class OrderedMap<K, V> implements OrderMap<K, V> {
 
     private MapIterator(T[] array, int startInclusive, int stopInclusive) {
       arr = array;
+
+      // if both the current and stop happen to be negative, it indicates
+      // that the iterator is to be empty. Adjust current to be larger that stop
+      // to achieve the same.
       this.current = startInclusive >= 0 ? startInclusive : -1;
       this.stop = (stopInclusive >= 0) ? stopInclusive : -2;
     }
@@ -484,6 +680,10 @@ public class OrderedMap<K, V> implements OrderMap<K, V> {
     private EntryIterator(K[] keys, V[] values, int startInclusive, int stopInclusive) {
       this.keys = keys;
       this.values = values;
+
+      // if both the current and stop happen to be negative, it indicates
+      // that the iterator is to be empty. Adjust current to be larger that stop
+      // to achieve the same.
       this.current = startInclusive >= 0 ? startInclusive : -1;
       this.stop = (stopInclusive >= 0) ? stopInclusive : -2;
     }

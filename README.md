@@ -66,7 +66,7 @@ com.company.aniketkr.algorithms1
         |
         `-- symbol
               |-- UnorderedMap
-              |-- *OrderedMap
+              |-- OrderedMap
               `-- *RedBlackMap
 ```
 
