@@ -159,5 +159,5 @@ public interface Map<K, V> {
    * @return An iterable that iterates over entries, i.e. key-value pairs.
    * @see Entry
    */
-  Iterable<Entry<? extends K, ? extends V>> entries();
+  Iterable<Entry<K, V>> entries();
 }
