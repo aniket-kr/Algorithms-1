@@ -72,12 +72,21 @@ public final class Entry<K, V> {
 
   @Override
   public String toString() {
-    String keyS;
-    String valueS;
-    keyS = (key instanceof Object[]) ? Arrays.deepToString((Object[]) key) : key.toString();
-    valueS = (value instanceof Object[]) ? Arrays.deepToString((Object[]) value) : value.toString();
+    String keyStr;
+    if (key instanceof Object[]) {
+      keyStr = Arrays.deepToString((Object[]) key);
+    } else {
+      keyStr = Objects.toString(key);
+    }
 
-    return String.format("%s: %s", keyS, valueS);
+    String valueStr;
+    if (value instanceof Object[]) {
+      valueStr = Arrays.deepToString((Object[]) value);
+    } else {
+      valueStr = Objects.toString(value);
+    }
+
+    return String.format("%s: %s", keyStr, valueStr);
   }
 
   /* **************************************************************************
