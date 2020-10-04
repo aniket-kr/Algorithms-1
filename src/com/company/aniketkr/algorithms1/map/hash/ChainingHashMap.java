@@ -2,7 +2,6 @@ package com.company.aniketkr.algorithms1.map.hash;
 
 import com.company.aniketkr.algorithms1.map.Entry;
 import com.company.aniketkr.algorithms1.map.Map;
-import com.company.aniketkr.algorithms1.map.OrderMap;
 import com.company.aniketkr.algorithms1.map.symbol.UnorderedMap;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -11,7 +10,7 @@ import java.util.Objects;
 import java.util.function.Function;
 
 
-public final class ChainingHashMap<K, V> implements Map<K, V> {
+public final class ChainingHashMap<K, V> extends Map<K, V> {
   private static final int INIT_CAPACITY = 4;
 
   private Map<K, V>[] buckets;
@@ -28,69 +27,6 @@ public final class ChainingHashMap<K, V> implements Map<K, V> {
     }
 
     buckets = (Map<K, V>[]) new Map<?, ?>[capacity];
-  }
-
-  /* **************************************************************************
-   * Section: Object Operations
-   ************************************************************************** */
-
-  @Override
-  public int hashCode() {
-    long hash = 0L;
-    for (Entry<K, V> entry : this.entries()) {
-      hash += entry.hashCode();
-    }
-
-    return (int) (hash % Integer.MAX_VALUE);
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (obj instanceof OrderMap) {
-      return obj.equals(this);
-    }
-    if (!(obj instanceof Map)) {
-      return false;
-    }
-    Map<?, ?> map = (Map<?, ?>) obj;
-    if (this.size() != map.size()) {
-      return false;
-    }
-
-    return mapEquals(map);
-  }
-
-  @Override
-  public String toString() {
-    if (isEmpty()) {
-      return "[0]{ }";
-    }
-
-    StringBuilder sb = new StringBuilder("[").append(size()).append("]{ ");
-    this.entries().forEach(entry -> sb.append(entry).append(", "));
-    sb.setLength(sb.length() - 2);
-    return sb.append(" }").toString();
-  }
-
-  @SuppressWarnings("unchecked")
-  private boolean mapEquals(Map<?, ?> map) {
-    try {
-      for (Entry<?, ?> entry : map.entries()) {
-        if (!Objects.deepEquals(entry.value(), this.get((K) entry.key()))) {
-          // at least one entry has unequal values for the same key
-          return false;
-        }
-      }
-    } catch (ClassCastException | NoSuchElementException ok) {
-      // ClassCastException     -> key types in the two maps are not interconvertible
-      // NoSuchElementException -> key from `map` does not exist in `this` map
-      return false;
-    }
-
-    return true;  // all key-value pairs are equal
   }
 
   /* **************************************************************************
@@ -204,19 +140,7 @@ public final class ChainingHashMap<K, V> implements Map<K, V> {
   @Override
   public ChainingHashMap<K, V> deepcopy(Function<? super K, K> keyCopyFn, //
                                         Function<? super V, V> valueCopyFn) {
-    if (keyCopyFn == null) {
-      throw new IllegalArgumentException("param 'keyCopyFn' cannot be null");
-    }
-    if (valueCopyFn == null) {
-      throw new IllegalArgumentException("param 'valueCopyFn' cannot be null");
-    }
-
-    ChainingHashMap<K, V> cp = new ChainingHashMap<>((size() >= 2) ? (size() * 2) : INIT_CAPACITY);
-    for (Entry<K, V> entry : this.entries()) {
-      cp.put(keyCopyFn.apply(entry.key()), valueCopyFn.apply(entry.value()));
-    }
-
-    return cp;
+    return deepcopyHelper(new ChainingHashMap<>(size()), keyCopyFn, valueCopyFn);
   }
 
   /* **************************************************************************
@@ -225,17 +149,17 @@ public final class ChainingHashMap<K, V> implements Map<K, V> {
 
   @Override
   public Iterable<K> keys() {
-    return () -> new BucketMapIterator<>(map -> map.keys().iterator());
+    return () -> new BucketMapIterator<>(bucket -> bucket.keys().iterator());
   }
 
   @Override
   public Iterable<V> values() {
-    return () -> new BucketMapIterator<>(map -> map.values().iterator());
+    return () -> new BucketMapIterator<>(bucket -> bucket.values().iterator());
   }
 
   @Override
   public Iterable<Entry<K, V>> entries() {
-    return () -> new BucketMapIterator<>(map -> map.entries().iterator());
+    return () -> new BucketMapIterator<>(bucket -> bucket.entries().iterator());
   }
 
   /* **************************************************************************
