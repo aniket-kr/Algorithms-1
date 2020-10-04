@@ -2,16 +2,17 @@ package com.company.aniketkr.algorithms1.map.hash;
 
 import com.company.aniketkr.algorithms1.map.Entry;
 import com.company.aniketkr.algorithms1.map.Map;
+import com.company.aniketkr.algorithms1.map.OrderMap;
 import com.company.aniketkr.algorithms1.map.symbol.UnorderedMap;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.function.Function;
 
 
 public final class ChainingHashMap<K, V> implements Map<K, V> {
   private static final int INIT_CAPACITY = 4;
-  private static final int INIT_BUCKET_SIZE = 2;
 
   private Map<K, V>[] buckets;
   private int length = 0;
@@ -35,12 +36,31 @@ public final class ChainingHashMap<K, V> implements Map<K, V> {
 
   @Override
   public int hashCode() {
-    return super.hashCode();
+    long hash = 0L;
+    for (Entry<K, V> entry : this.entries()) {
+      hash += entry.hashCode();
+    }
+
+    return (int) (hash % Integer.MAX_VALUE);
   }
 
   @Override
   public boolean equals(Object obj) {
-    return super.equals(obj);
+    if (this == obj) {
+      return true;
+    }
+    if (obj instanceof OrderMap) {
+      return obj.equals(this);
+    }
+    if (!(obj instanceof Map)) {
+      return false;
+    }
+    Map<?, ?> map = (Map<?, ?>) obj;
+    if (this.size() != map.size()) {
+      return false;
+    }
+
+    return mapEquals(map);
   }
 
   @Override
@@ -53,6 +73,24 @@ public final class ChainingHashMap<K, V> implements Map<K, V> {
     this.entries().forEach(entry -> sb.append(entry).append(", "));
     sb.setLength(sb.length() - 2);
     return sb.append(" }").toString();
+  }
+
+  @SuppressWarnings("unchecked")
+  private boolean mapEquals(Map<?, ?> map) {
+    try {
+      for (Entry<?, ?> entry : map.entries()) {
+        if (!Objects.deepEquals(entry.value(), this.get((K) entry.key()))) {
+          // at least one entry has unequal values for the same key
+          return false;
+        }
+      }
+    } catch (ClassCastException | NoSuchElementException ok) {
+      // ClassCastException     -> key types in the two maps are not interconvertible
+      // NoSuchElementException -> key from `map` does not exist in `this` map
+      return false;
+    }
+
+    return true;  // all key-value pairs are equal
   }
 
   /* **************************************************************************
@@ -95,8 +133,13 @@ public final class ChainingHashMap<K, V> implements Map<K, V> {
     }
 
     // no "bucket" available, key not present
-    String keyS = (key instanceof Object[]) ? Arrays.deepToString((Object[]) key) : key.toString();
-    throw new NoSuchElementException(String.format("key '%s' doesn't exist in the map", keyS));
+    String keyStr;
+    if (key instanceof Object[]) {
+      keyStr = Arrays.deepToString((Object[]) key);
+    } else {
+      keyStr = Objects.toString(key);
+    }
+    throw new NoSuchElementException(String.format("key '%s' doesn't exist in the map", keyStr));
   }
 
   @Override
@@ -115,7 +158,7 @@ public final class ChainingHashMap<K, V> implements Map<K, V> {
     int h = hash(key);
 
     if (buckets[h] == null) {
-      buckets[h] = new UnorderedMap<>(INIT_BUCKET_SIZE);
+      buckets[h] = new UnorderedMap<>(2);
     }
 
     boolean keyWasPut = buckets[h].put(key, value);
@@ -155,13 +198,25 @@ public final class ChainingHashMap<K, V> implements Map<K, V> {
 
   @Override
   public ChainingHashMap<K, V> copy() {
-    return null;
+    return deepcopy(Function.identity(), Function.identity());
   }
 
   @Override
   public ChainingHashMap<K, V> deepcopy(Function<? super K, K> keyCopyFn, //
                                         Function<? super V, V> valueCopyFn) {
-    return null;
+    if (keyCopyFn == null) {
+      throw new IllegalArgumentException("param 'keyCopyFn' cannot be null");
+    }
+    if (valueCopyFn == null) {
+      throw new IllegalArgumentException("param 'valueCopyFn' cannot be null");
+    }
+
+    ChainingHashMap<K, V> cp = new ChainingHashMap<>((size() >= 2) ? (size() * 2) : INIT_CAPACITY);
+    for (Entry<K, V> entry : this.entries()) {
+      cp.put(keyCopyFn.apply(entry.key()), valueCopyFn.apply(entry.value()));
+    }
+
+    return cp;
   }
 
   /* **************************************************************************
