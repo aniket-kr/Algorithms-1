@@ -4,8 +4,8 @@ import java.util.Arrays;
 import java.util.Objects;
 
 /**
- * Represents an entry in a map, like {@link Map}. An "entry" is defined as a
- * single key-value pair.
+ * Represents an entry in a map, like {@link Map}. An "entry" is defined as a single key-value
+ * pair.
  *
  * @param <K> The type of key.
  * @param <V> The type of value to associate to the key.
@@ -16,9 +16,8 @@ public final class Entry<K, V> {
   private final V value;
 
   /**
-   * Creates a new immutable key-value pair Entry object.
-   * Assumes nothing about the key and the value types - they can also be
-   * {@code null}.
+   * Creates a new immutable key-value pair Entry object. Assumes nothing about the key and the
+   * value types - they can also be {@code null}.
    *
    * @param key   The key in the key-value pair.
    * @param value The value to associate with given key.
@@ -53,6 +52,20 @@ public final class Entry<K, V> {
     return hash;
   }
 
+  /**
+   * Check if the given Object {@code obj} is equal to this {@code Entry}.
+   *
+   * <p>The following condition must be satisfied for equality:
+   * <ul>
+   *   <li>{@code obj} must be an instance of {@code Entry}.</li>
+   *   <li>{@code obj}'s key and value must be equal to the this entry's key and value.</li>
+   *   <li>In case any of {@code obj}'s key or value is an array, they must be "deeply" equal
+   *   to their counterparts in this Entry.</li>
+   * </ul></p>
+   *
+   * @param obj The other Object to compare with.
+   * @return {@code true} if {@code obj} satisfies all conditions, {@code false} otherwise.
+   */
   @Override
   public boolean equals(Object obj) {
     if (this == obj) {
@@ -70,6 +83,11 @@ public final class Entry<K, V> {
     return Objects.deepEquals(this.value, entry.value);
   }
 
+  /**
+   * Returns a string representation of the entry. Primarily for debugging client code.
+   *
+   * @return A String.
+   */
   @Override
   public String toString() {
     String keyStr;

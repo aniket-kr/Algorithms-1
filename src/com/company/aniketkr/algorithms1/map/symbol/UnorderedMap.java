@@ -2,7 +2,6 @@ package com.company.aniketkr.algorithms1.map.symbol;
 
 import com.company.aniketkr.algorithms1.map.Entry;
 import com.company.aniketkr.algorithms1.map.Map;
-import com.company.aniketkr.algorithms1.map.OrderMap;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -11,16 +10,15 @@ import java.util.function.Function;
 
 
 /**
- * Implement the {@link Map} interface using internal resizing array. The keys
- * are not required to define any other method except
- * {@link Object#equals(Object obj) equals} method.
+ * Extends the {@link Map} abstract class using internal resizing array. The keys are not required
+ * to define any other method except {@link Object#equals(Object obj) equals} method.
  *
- * @param <K> The type of key in the map. The key MUST override {@code equals}
- *            method. Keys can be {code null}.
+ * @param <K> The type of key in the map. The key MUST override {@code equals} method.
+ *            Keys can be {code null}.
  * @param <V> The type of value to be associated with the keys in the map.
  * @author Aniket Kumar
  */
-public final class UnorderedMap<K, V> implements Map<K, V> {
+public final class UnorderedMap<K, V> extends Map<K, V> {
   private static final int INIT_CAPACITY = 4;  // default init capacity of map
 
   private K[] keys;  // array holding keys of the map
@@ -28,21 +26,20 @@ public final class UnorderedMap<K, V> implements Map<K, V> {
   private int length = 0;  // number of key-value pairs in the map
 
   /**
-   * Instantiate an empty UnorderedMap instance which has the capacity
-   * to hold {@value INIT_CAPACITY} entries before having to resize.
+   * Instantiate an empty UnorderedMap instance which has the capacity to hold
+   * {@value INIT_CAPACITY} entries before having to resize.
    */
   public UnorderedMap() {
     this(INIT_CAPACITY);
   }
 
   /**
-   * Instantiate an empty UnorderedMap instance which has the capacity
-   * to hold {@code capacity} entries before having to resize.
+   * Instantiate an empty UnorderedMap instance which has the capacity to hold {@code capacity}
+   * entries before having to resize.
    *
-   * @param capacity The desired number of entries that the map should be able
-   *                 to hold without needing to resize.
-   * @throws IllegalArgumentException If {@code capacity} is less than or equal
-   *                                  to {code 0}.
+   * @param capacity The desired number of entries that the map should be able to hold without
+   *                 needing to resize.
+   * @throws IllegalArgumentException If {@code capacity} is less than or equal to {code 0}.
    */
   @SuppressWarnings("unchecked")
   public UnorderedMap(int capacity) {
@@ -54,77 +51,6 @@ public final class UnorderedMap<K, V> implements Map<K, V> {
     values = (V[]) new Object[capacity];
   }
 
-  /* **************************************************************************
-   * Section: Object Operations
-   ************************************************************************** */
-
-  @Override
-  public int hashCode() {
-    long hash = 0L;
-    for (Entry<K, V> entry : this.entries()) {
-      hash += entry.hashCode();
-    }
-
-    return (int) (hash % Integer.MAX_VALUE);
-  }
-
-  /**
-   * Check if the given object {@code obj} is "deeply" equal to "this" map.
-   * Takes quadratic time in the worst case.
-   *
-   * @return {@code true} if all the key-value pairs (or "entries") in both
-   *     the maps are the same, {@code false} otherwise.
-   */
-  @Override
-  public boolean equals(Object obj) {
-    boolean result = false;
-    if (this == obj) {
-      result = true;
-    } else if (obj instanceof OrderMap) {
-      result = obj.equals(this);
-    } else if (obj instanceof Map) {
-      Map<?, ?> map = (Map<?, ?>) obj;
-      if (map.size() == this.size()) {// compare all elements of two orderless maps - two instances of Map
-        result = mapEquals(map);
-      }
-    }
-
-    return result;
-  }
-
-  /**
-   * Compare all the entries in this 'unordered-map' with another 'unordered-map'
-   * and check if they are equal. Takes quadratic time in the worst case.
-   */
-  @SuppressWarnings("unchecked")
-  private boolean mapEquals(Map<?, ?> map) {
-    try {
-      for (Entry<?, ?> entry : map.entries()) {
-        if (!Objects.deepEquals(entry.value(), this.get((K) entry.key()))) {
-          // at least one key-value pair exists with same key but different values
-          return false;
-        }
-      }
-    } catch (ClassCastException | NoSuchElementException ok) {
-      // ClassCastException     -> keys of the maps are not interconvertible
-      // NoSuchElementException -> key not found in the map
-      return false;
-    }
-
-    return true;  // all key-value pairs are equal
-  }
-
-  @Override
-  public String toString() {
-    if (isEmpty()) {
-      return "[0]{ }";
-    }
-
-    StringBuilder sb = new StringBuilder("[").append(size()).append("]{ ");
-    this.entries().forEach(entry -> sb.append(entry).append(", "));
-    sb.setLength(sb.length() - 2);
-    return sb.append(" }").toString();
-  }
 
   /* **************************************************************************
    * Section: Basic Operations
@@ -177,8 +103,13 @@ public final class UnorderedMap<K, V> implements Map<K, V> {
     }
 
     // `key` doesn't exist
-    String keyS = (key instanceof Object[]) ? Arrays.deepToString((Object[]) key) : key.toString();
-    throw new NoSuchElementException(String.format("key '%s' doesn't exist in the map", keyS));
+    String keyStr;
+    if (key instanceof Object[]) {
+      keyStr = Arrays.deepToString((Object[]) key);
+    } else {
+      keyStr = Objects.toString(key);
+    }
+    throw new NoSuchElementException(String.format("key '%s' doesn't exist in the map", keyStr));
   }
 
   /**
@@ -241,6 +172,11 @@ public final class UnorderedMap<K, V> implements Map<K, V> {
    * Section: Duplication Operations
    ************************************************************************** */
 
+  /**
+   * {@inheritDoc}
+   *
+   * @return A copy of {@code this} UnorderedMap.
+   */
   @Override
   public UnorderedMap<K, V> copy() {
     UnorderedMap<K, V> cp = new UnorderedMap<>((size() >= 2) ? (size() * 2) : INIT_CAPACITY);
@@ -251,20 +187,15 @@ public final class UnorderedMap<K, V> implements Map<K, V> {
     return cp;
   }
 
+  /**
+   * {@inheritDoc}
+   *
+   * @return A deepcopy of {@code this} UnorderedMap.
+   */
   @Override
   public UnorderedMap<K, V> deepcopy(Function<? super K, K> keyCopyFn,  //
                                      Function<? super V, V> valueCopyFn) {
-    if (keyCopyFn == null || valueCopyFn == null) {
-      throw new IllegalArgumentException("at least one argument to deepcopy() is null");
-    }
-
-    UnorderedMap<K, V> cp = new UnorderedMap<>((size() >= 2) ? (size() * 2) : INIT_CAPACITY);
-    // deepcopy all the pairs
-    this.entries().forEach(entry -> {
-      cp.put(keyCopyFn.apply(entry.key()), valueCopyFn.apply(entry.value()));
-    });
-
-    return cp;
+    return super.deepcopyHelper(new UnorderedMap<>(size()), keyCopyFn, valueCopyFn);
   }
 
   /* **************************************************************************
@@ -303,8 +234,8 @@ public final class UnorderedMap<K, V> implements Map<K, V> {
    ****************************************************************************/
 
   /**
-   * Find the index at which {@code key} is located in the {@code keys} array.
-   * The time taken by the operation is linear.
+   * Find the index at which {@code key} is located in the {@code keys} array. The time taken by
+   * the operation is linear.
    *
    * @param key The key to look for.
    * @return The index at which {@code key} is at, or {@code -1} if not present.
@@ -321,10 +252,9 @@ public final class UnorderedMap<K, V> implements Map<K, V> {
   }
 
   /**
-   * Resize the internal {@code keys} and {@code values} arrays to the given
-   * new size {@code newSize}. Resizing is achieved by copying over the elements
-   * from the original arrays to the new arrays. Expectedly, the operation is a
-   * linear time one.
+   * Resize the internal {@code keys} and {@code values} arrays to the given new size
+   * {@code newSize}. Resizing is achieved by copying over the elements from the original arrays to
+   * the new arrays. Expectedly, the operation is a linear time one.
    *
    * @param newSize The new desired size of the internal arrays.
    */
@@ -340,8 +270,7 @@ public final class UnorderedMap<K, V> implements Map<K, V> {
   }
 
   /**
-   * Shift the elements of both the key and value arrays over to the left
-   * by one position.
+   * Shift the elements of both the key and value arrays over to the left by one position.
    *
    * @param fromIndex The index to start shifting elements from.
    */
