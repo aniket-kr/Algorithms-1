@@ -56,8 +56,8 @@ com.company.aniketkr.algorithms1
   |     `-- *Heap
   |
   `-- map
-        |-- Map (interface)
-        |-- OrderMap (interface)
+        |-- Map (abstract)
+        |-- OrderMap (abstract)
         |-- Entry (immutable helper type)
         |
         |-- hash
