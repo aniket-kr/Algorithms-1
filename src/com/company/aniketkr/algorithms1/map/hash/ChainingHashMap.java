@@ -10,16 +10,37 @@ import java.util.Objects;
 import java.util.function.Function;
 
 
+/**
+ * Extends {@link Map} abstract class using an internal hash table with buckets. The default number
+ * of entries that it holds is {@value INIT_CAPACITY}, which can be changed at the time of
+ * construction. All the time complexities in method documentations are proposed under the
+ * <em>uniform hashing assumption</em>.
+ *
+ * @param <K> The type of key in the map. MUST be immutable. Can be {@code null}. If the keys are
+ *            not mutable, and their hashcode changes, then the behaviour is undefined.
+ * @param <V> The type of value to be associated with keys in the map. Can be {@code null}.
+ * @author Aniket Kumar
+ */
 public final class ChainingHashMap<K, V> extends Map<K, V> {
-  private static final int INIT_CAPACITY = 4;
+  private static final int INIT_CAPACITY = 4;  // default number of buckets
 
-  private Map<K, V>[] buckets;
-  private int length = 0;
+  private Map<K, V>[] buckets;  // array holding buckets
+  private int length = 0;  // number of key-value pairs in the map
 
+  /**
+   * Initialise an empty ChainingHashMap instance which has the capacity to hold
+   * {@value INIT_CAPACITY} key-value pairs (or "entries").
+   */
   public ChainingHashMap() {
     this(INIT_CAPACITY);
   }
 
+  /**
+   * Initialise an empty ChainingHashMap instance which has the capacity to hold {@code capacity}
+   * key-value pairs (or "entries").
+   *
+   * @throws IllegalArgumentException If {@code capacity} is less than or equal to {@code 0}.
+   */
   @SuppressWarnings("unchecked")
   public ChainingHashMap(int capacity) {
     if (capacity <= 0) {
@@ -43,6 +64,10 @@ public final class ChainingHashMap<K, V> extends Map<K, V> {
     return size() == 0;
   }
 
+  /**
+   * {@inheritDoc}
+   * It is a constant time operation.
+   */
   @Override
   @SuppressWarnings("unchecked")
   public void clear() {
@@ -50,6 +75,10 @@ public final class ChainingHashMap<K, V> extends Map<K, V> {
     length = 0;
   }
 
+  /**
+   * {@inheritDoc}
+   * Takes constant time under uniform hashing assumption.
+   */
   @Override
   public boolean contains(K key) {
     int h = hash(key);
@@ -60,6 +89,10 @@ public final class ChainingHashMap<K, V> extends Map<K, V> {
    * Section: Map Operations
    ************************************************************************** */
 
+  /**
+   * {@inheritDoc}
+   * Takes constant amortized time in average case. Takes linear time in worst case.
+   */
   @Override
   public V get(K key) {
     int h = hash(key);
@@ -78,6 +111,10 @@ public final class ChainingHashMap<K, V> extends Map<K, V> {
     throw new NoSuchElementException(String.format("key '%s' doesn't exist in the map", keyStr));
   }
 
+  /**
+   * {@inheritDoc}
+   * Assuming a uniform hash, it should be constant time operation.
+   */
   @Override
   public V get(K key, V fallback) {
     int h = hash(key);
@@ -85,6 +122,10 @@ public final class ChainingHashMap<K, V> extends Map<K, V> {
     return (buckets[h] != null) ? buckets[h].get(key, fallback) : fallback;
   }
 
+  /**
+   * {@inheritDoc}
+   * Takes constant amortized time in average case, linear time in worst case.
+   */
   @Override
   public boolean put(K key, V value) {
     if (size() == buckets.length) {
@@ -104,6 +145,10 @@ public final class ChainingHashMap<K, V> extends Map<K, V> {
     return keyWasPut;
   }
 
+  /**
+   * {@inheritDoc}
+   * Takes constant amortized time in average case, but linear time in worst case.
+   */
   @Override
   public boolean delete(K key) {
     if (size() == buckets.length / 4) {
@@ -147,16 +192,28 @@ public final class ChainingHashMap<K, V> extends Map<K, V> {
    * Section: Iteration Operations
    ************************************************************************** */
 
+  /**
+   * {@inheritDoc}
+   * Takes constant time and space to construct the iterable.
+   */
   @Override
   public Iterable<K> keys() {
     return () -> new BucketMapIterator<>(bucket -> bucket.keys().iterator());
   }
 
+  /**
+   * {@inheritDoc}
+   * Takes constant time and space to construct the iterable.
+   */
   @Override
   public Iterable<V> values() {
     return () -> new BucketMapIterator<>(bucket -> bucket.values().iterator());
   }
 
+  /**
+   * {@inheritDoc}
+   * Takes constant time and space to construct the iterable.
+   */
   @Override
   public Iterable<Entry<K, V>> entries() {
     return () -> new BucketMapIterator<>(bucket -> bucket.entries().iterator());
@@ -166,6 +223,13 @@ public final class ChainingHashMap<K, V> extends Map<K, V> {
    * Section: Helper Classes and Methods
    ************************************************************************** */
 
+  /**
+   * Gets the index after applying internal hash function. Note that this function is highly
+   * dependent on the {@code hashCode()} implementation of the key.
+   *
+   * @param key The key to hash. Can be {@code null}.
+   * @return The index at which this key should be at.
+   */
   private int hash(K key) {
     if (key == null) {
       return 0;
@@ -175,6 +239,12 @@ public final class ChainingHashMap<K, V> extends Map<K, V> {
     return (hash & 0x7f_fff_fff) % buckets.length;
   }
 
+  /**
+   * Rehashes all the keys in the map when the size of the buckets array changes. Takes linear time
+   * and linear extra space.
+   *
+   * @param newSize The new desired capacity of the internal array.
+   */
   private void rehash(int newSize) {
     ChainingHashMap<K, V> hashMap = new ChainingHashMap<>(newSize);
     for (Entry<K, V> entry : this.entries()) {
@@ -185,10 +255,13 @@ public final class ChainingHashMap<K, V> extends Map<K, V> {
   }
 
   private class BucketMapIterator<R> implements Iterator<R> {
+
+    /** Takes bucket (map) and returns its iterator. */
     private final Function<? super Map<K, V>, Iterator<R>> itorFn;
-    private int iterated = 0;
-    private int bucketIndex = 0;
-    private Iterator<R> curItor = null;
+
+    private int iterated = 0;  // count of entities iterated over
+    private int bucketIndex = 0;  // index of outer buckets array
+    private Iterator<R> curItor = null;  // current iterator to produce return entity from
 
     private BucketMapIterator(Function<? super Map<K, V>, Iterator<R>> itorFn) {
       this.itorFn = itorFn;

@@ -61,7 +61,7 @@ com.company.aniketkr.algorithms1
         |-- Entry (immutable helper type)
         |
         |-- hash
-        |     |-- *ChainingHashMap
+        |     |-- ChainingHashMap
         |     `-- *ProbingHashMap
         |
         `-- symbol
