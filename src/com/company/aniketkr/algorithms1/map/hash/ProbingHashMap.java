@@ -154,7 +154,7 @@ public final class ProbingHashMap<K, V> extends Map<K, V> {
   @Override
   public ProbingHashMap<K, V> deepcopy(Function<? super K, K> keyCopyFn, //
                                        Function<? super V, V> valueCopyFn) {
-    return deepcopyHelper(new ProbingHashMap<>(size()), keyCopyFn, valueCopyFn);
+    return deepcopyMaker(new ProbingHashMap<>(size()), keyCopyFn, valueCopyFn);
   }
 
   /* **************************************************************************

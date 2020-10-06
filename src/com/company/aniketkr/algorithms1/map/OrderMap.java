@@ -296,12 +296,12 @@ public abstract class OrderMap<K, V> extends Map<K, V> {
    * @throws NullPointerException If {@code keyCopyFn} returns {@code null}.
    */
   @Override
-  protected <T extends Map<K, V>> T deepcopyHelper(T mapInst, //
-                                                   Function<? super K, K> keyCopyFn, //
-                                                   Function<? super V, V> valueCopyFn) {
+  protected <T extends Map<K, V>> T deepcopyMaker(T mapInst, //
+                                                  Function<? super K, K> keyCopyFn, //
+                                                  Function<? super V, V> valueCopyFn) {
     keyCopyFn = keyCopyFn.andThen(key -> //
         Objects.requireNonNull(key, "'keyCopyFn' returned null key"));
 
-    return super.deepcopyHelper(mapInst, keyCopyFn, valueCopyFn);
+    return super.deepcopyMaker(mapInst, keyCopyFn, valueCopyFn);
   }
 }

@@ -185,7 +185,7 @@ public final class ChainingHashMap<K, V> extends Map<K, V> {
   @Override
   public ChainingHashMap<K, V> deepcopy(Function<? super K, K> keyCopyFn, //
                                         Function<? super V, V> valueCopyFn) {
-    return deepcopyHelper(new ChainingHashMap<>(size()), keyCopyFn, valueCopyFn);
+    return deepcopyMaker(new ChainingHashMap<>(size()), keyCopyFn, valueCopyFn);
   }
 
   /* **************************************************************************

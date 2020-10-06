@@ -224,9 +224,9 @@ public abstract class Map<K, V> {
    * @throws IllegalArgumentException If either {@code keyCopyFn} or {@code valeCopyFn} is
    *                                  {@code null}.
    */
-  protected <T extends Map<K, V>> T deepcopyHelper(T mapInst, //
-                                                   Function<? super K, K> keyCopyFn, //
-                                                   Function<? super V, V> valueCopyFn) {
+  protected <T extends Map<K, V>> T deepcopyMaker(T mapInst, //
+                                                  Function<? super K, K> keyCopyFn, //
+                                                  Function<? super V, V> valueCopyFn) {
     if (keyCopyFn == null) {
       throw new IllegalArgumentException("param 'keyCopyFn' cannot be null");
     }

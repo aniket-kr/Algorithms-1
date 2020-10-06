@@ -195,7 +195,7 @@ public final class UnorderedMap<K, V> extends Map<K, V> {
   @Override
   public UnorderedMap<K, V> deepcopy(Function<? super K, K> keyCopyFn,  //
                                      Function<? super V, V> valueCopyFn) {
-    return super.deepcopyHelper(new UnorderedMap<>(size()), keyCopyFn, valueCopyFn);
+    return deepcopyMaker(new UnorderedMap<>(size()), keyCopyFn, valueCopyFn);
   }
 
   /* **************************************************************************

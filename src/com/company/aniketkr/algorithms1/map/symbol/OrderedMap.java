@@ -380,7 +380,7 @@ public final class OrderedMap<K, V> extends OrderMap<K, V> {
   @Override
   public OrderedMap<K, V> deepcopy(Function<? super K, K> keyCopyFn, //
                                    Function<? super V, V> valueCopyFn) {
-    return super.deepcopyHelper(new OrderedMap<>(size(), comp), keyCopyFn, valueCopyFn);
+    return deepcopyMaker(new OrderedMap<>(size(), comp), keyCopyFn, valueCopyFn);
   }
 
   /* **************************************************************************
