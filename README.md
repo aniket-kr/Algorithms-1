@@ -18,7 +18,7 @@ com.company.aniketkr.algorithms1
   |-- WeightedQuickUnion
   |
   |-- collection
-  |     |-- *Collection (interface)
+  |     |-- Collection (interface)
   |     |
   |     |-- list
   |     |     |-- *List (interface)
@@ -26,7 +26,7 @@ com.company.aniketkr.algorithms1
   |     |     `-- *LinkedList
   |     |
   |     |-- queue
-  |     |     |-- *Queue (interface)
+  |     |     |-- Queue (interface)
   |     |     |-- *ArrayQueue
   |     |     `-- *LinkedQueue
   |     |
