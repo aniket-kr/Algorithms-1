@@ -62,7 +62,7 @@ com.company.aniketkr.algorithms1
         |
         |-- hash
         |     |-- ChainingHashMap
-        |     `-- *ProbingHashMap
+        |     `-- ProbingHashMap
         |
         `-- symbol
               |-- UnorderedMap
@@ -78,23 +78,23 @@ The styles specified have been followed strictly.
 
 API Notes
 ---------
- + `Collection` interface is the base interface of all data structures
-   that hold a single type of element.
+ + `Collection` abstract class is the base abstract class of all data
+   structures that hold a single type of element.
  
- + `List`, `Queue`, `Stack`, `Deque` and `PriorityQueue` interfaces, all
-   extend the base `Collection` interface. Note that `Map` does __NOT__
-   extend this interface.
+ + `List`, `Queue`, `Stack`, `Deque` and `PriorityQueue` all extend the
+   base `Collection` abstract class and are themselves abstract. Note that
+   `Map` does __NOT__ extend this abstract class.
 
- + `Map` is another (different) interface that is the base class for data
-   structures that associate a given "key" to the provided "value".
+ + `Map`, an abstract class, is the base for all data structures that
+   associate a given "key" to the provided "value".
 
- + `OrderMap` extends `Map` interface to take advantage of the fact that
-   the "keys" can be ordered, and hence provides an extended API that can
+ + `OrderMap` extends `Map` abstract class to take advantage of the fact
+    that "keys" can be ordered, and hence provides an extended API that can
    be implemented efficiently.
 
- + The abstract class `Sorter` is package-private but provided a base 
-   class to inherit certain overloads of the `sort()` method. All other
-   public classes in package `sorting` inherit the base class `Sorter`.
+ + Abstract class `Sorter` is package-private but provides a base class to
+   inherit certain overloads of the `sort()` method. All other public
+   classes in package `sorting` inherit the base class `Sorter`.
 
 Implementation Notes
 --------------------
