@@ -56,7 +56,9 @@ public abstract class Collection<E> implements Iterable<E> {
 
   @Override
   public String toString() {
-    if (isEmpty()) return "[0][ ]";
+    if (isEmpty()) {
+      return "[0][ ]";
+    }
 
     StringBuilder sb = new StringBuilder("[").append(size()).append("][ ");
     this.forEach(elmt -> sb.append(Util.stringify(elmt)).append(", "));
@@ -131,8 +133,8 @@ public abstract class Collection<E> implements Iterable<E> {
    ************************************************************************** */
 
   /**
-   * Iterates over the elements of the collection in natural order. The natural order is best defined
-   * by the extending subclasses.
+   * Iterates over the elements of the collection in natural order. The natural order is best
+   * defined by the extending subclasses.
    *
    * @return An iterator that iterates over elements.
    */

@@ -73,7 +73,7 @@ public final class LinkedQueue<E> extends Queue<E> {
       throw new NoSuchElementException("underflow: can't dequeue from empty queue");
     }
 
-    E elmt = head.elmt;
+    final E elmt = head.elmt;
     if (size() == 1) {
       head = null;
       tail = null;
@@ -105,6 +105,8 @@ public final class LinkedQueue<E> extends Queue<E> {
   /**
    * {@inheritDoc}
    * It is a linear time operation. Takes as much time as {@link #deepcopy(Function)}.
+   *
+   * @return A shallow copy of this {@code LinkedQueue}.
    */
   @Override
   public LinkedQueue<E> copy() {
@@ -116,6 +118,8 @@ public final class LinkedQueue<E> extends Queue<E> {
    * If {@code copyFn} takes '{@code c}' time to make a copy, then the operation takes time
    * proportional to <code>&theta;(cn)</code>, where '{@code n}' is the number of elements in
    * the queue.
+   *
+   * @return A deepcopy of this {@code LinkedQueue}.
    */
   @Override
   public LinkedQueue<E> deepcopy(Function<? super E, E> copyFn) {
@@ -143,6 +147,7 @@ public final class LinkedQueue<E> extends Queue<E> {
 
   /**
    * Represents a <em>node</em> in a singly linked list.
+   *
    * @param <E> The type of element that this "node" will store.
    */
   private static class Node<E> {

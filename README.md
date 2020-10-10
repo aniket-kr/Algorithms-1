@@ -27,7 +27,7 @@ com.company.aniketkr.algorithms1
   |     |
   |     |-- queue
   |     |     |-- Queue (abstract)
-  |     |     |-- *ArrayQueue
+  |     |     |-- ArrayQueue
   |     |     `-- LinkedQueue
   |     |
   |     |-- stack
