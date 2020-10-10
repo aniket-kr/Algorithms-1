@@ -18,25 +18,25 @@ com.company.aniketkr.algorithms1
   |-- WeightedQuickUnion
   |
   |-- collection
-  |     |-- Collection (interface)
+  |     |-- Collection (abstract)
   |     |
   |     |-- list
-  |     |     |-- *List (interface)
+  |     |     |-- *List (abstract)
   |     |     |-- *ArrayList
   |     |     `-- *LinkedList
   |     |
   |     |-- queue
-  |     |     |-- Queue (interface)
+  |     |     |-- Queue (abstract)
   |     |     |-- *ArrayQueue
-  |     |     `-- *LinkedQueue
+  |     |     `-- LinkedQueue
   |     |
   |     |-- stack
-  |     |     |-- *Stack (interface)
+  |     |     |-- *Stack (abstract)
   |     |     |-- *ArrayStack
   |     |     `-- *LinkedStack
   |     |
   |     |-- dequeue
-  |     |     |-- *Deque (interface)
+  |     |     |-- *Deque (abstract)
   |     |     |-- *ArrayDeque
   |     |     `-- *LinkedDeque
   |     |
@@ -45,7 +45,6 @@ com.company.aniketkr.algorithms1
   |           `-- *HeapPriorityQueue
   |
   |-- sorting
-  |     |
   |     |-- *Sorter (package-private abstract)
   |     |-- *Selection
   |     |-- *Bubble
