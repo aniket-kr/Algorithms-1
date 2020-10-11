@@ -1,5 +1,6 @@
 package com.company.aniketkr.algorithms1.map.hash;
 
+import com.company.aniketkr.algorithms1.Util;
 import com.company.aniketkr.algorithms1.map.Entry;
 import com.company.aniketkr.algorithms1.map.Map;
 import com.company.aniketkr.algorithms1.map.symbol.UnorderedMap;
@@ -102,12 +103,7 @@ public final class ChainingHashMap<K, V> extends Map<K, V> {
     }
 
     // no "bucket" available, key not present
-    String keyStr;
-    if (key instanceof Object[]) {
-      keyStr = Arrays.deepToString((Object[]) key);
-    } else {
-      keyStr = Objects.toString(key);
-    }
+    String keyStr = Util.stringify(key);
     throw new NoSuchElementException(String.format("key '%s' doesn't exist in the map", keyStr));
   }
 

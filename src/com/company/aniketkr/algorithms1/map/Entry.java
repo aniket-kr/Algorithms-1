@@ -1,5 +1,6 @@
 package com.company.aniketkr.algorithms1.map;
 
+import com.company.aniketkr.algorithms1.Util;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -39,14 +40,14 @@ public final class Entry<K, V> {
     if (key instanceof Object[]) {
       hash += 31 * Arrays.deepHashCode((Object[]) key);
     } else {
-      hash += (key != null) ? 31 * key.hashCode() : 0;
+      hash += Objects.hashCode(key);
     }
 
     // hash of value
     if (value instanceof Object[]) {
       hash += 31 * Arrays.deepHashCode((Object[]) value);
     } else {
-      hash += (value != null) ? 31 * value.hashCode() : 0;
+      hash += Objects.hashCode(value);
     }
 
     return hash;
@@ -90,20 +91,8 @@ public final class Entry<K, V> {
    */
   @Override
   public String toString() {
-    String keyStr;
-    if (key instanceof Object[]) {
-      keyStr = Arrays.deepToString((Object[]) key);
-    } else {
-      keyStr = Objects.toString(key);
-    }
-
-    String valueStr;
-    if (value instanceof Object[]) {
-      valueStr = Arrays.deepToString((Object[]) value);
-    } else {
-      valueStr = Objects.toString(value);
-    }
-
+    String keyStr = Util.stringify(key);
+    String valueStr = Util.stringify(value);
     return String.format("%s: %s", keyStr, valueStr);
   }
 

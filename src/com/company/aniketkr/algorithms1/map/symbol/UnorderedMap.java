@@ -1,5 +1,6 @@
 package com.company.aniketkr.algorithms1.map.symbol;
 
+import com.company.aniketkr.algorithms1.Util;
 import com.company.aniketkr.algorithms1.map.Entry;
 import com.company.aniketkr.algorithms1.map.Map;
 import java.util.Arrays;
@@ -103,12 +104,7 @@ public final class UnorderedMap<K, V> extends Map<K, V> {
     }
 
     // `key` doesn't exist
-    String keyStr;
-    if (key instanceof Object[]) {
-      keyStr = Arrays.deepToString((Object[]) key);
-    } else {
-      keyStr = Objects.toString(key);
-    }
+    String keyStr = Util.stringify(key);
     throw new NoSuchElementException(String.format("key '%s' doesn't exist in the map", keyStr));
   }
 

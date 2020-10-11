@@ -1,5 +1,6 @@
 package com.company.aniketkr.algorithms1.map.symbol;
 
+import com.company.aniketkr.algorithms1.Util;
 import com.company.aniketkr.algorithms1.map.Entry;
 import com.company.aniketkr.algorithms1.map.OrderMap;
 import java.util.Arrays;
@@ -154,7 +155,8 @@ public final class OrderedMap<K, V> extends OrderMap<K, V> {
     }
 
     // key wasn't found
-    throw new NoSuchElementException(String.format("key '%s' doesn't exist in map", key));
+    throw new NoSuchElementException(//
+        String.format("key '%s' doesn't exist in map", Util.stringify(key)));
   }
 
   /**

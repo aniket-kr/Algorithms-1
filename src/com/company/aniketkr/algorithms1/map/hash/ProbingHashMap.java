@@ -1,5 +1,6 @@
 package com.company.aniketkr.algorithms1.map.hash;
 
+import com.company.aniketkr.algorithms1.Util;
 import com.company.aniketkr.algorithms1.map.Entry;
 import com.company.aniketkr.algorithms1.map.Map;
 import java.util.Arrays;
@@ -138,12 +139,7 @@ public final class ProbingHashMap<K, V> extends Map<K, V> {
     }
 
     // key doesn't exist, throw exception
-    String keyStr;
-    if (key instanceof Object[]) {
-      keyStr = Arrays.deepToString((Object[]) key);
-    } else {
-      keyStr = Objects.toString(key);
-    }
+    String keyStr = Util.stringify(key);
     throw new NoSuchElementException(String.format("key '%s' does not exist in map", keyStr));
   }
 

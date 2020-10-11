@@ -1,5 +1,6 @@
 package com.company.aniketkr.algorithms1.collection;
 
+import com.company.aniketkr.algorithms1.Util;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Objects;
@@ -41,7 +42,10 @@ public abstract class Collection<E> implements Iterable<E> {
    *   <li>{@code obj} extends the {@link Collection} abstract class.</li>
    *   <li>{@code obj} is the same "type" of collection as "this". (Stack goes with Stack,
    *       Queue with Queue, etc.)</li>
-   *   <li>All the elements in the iteration sequence are equal in both the collections.</li>
+   *   <li>
+   *     All the elements in the iteration sequence are equal and in the same place in both the
+   *       collections.
+   *   </li>
    * </ul>
    *
    * @param obj The object to compare with for equality.
@@ -55,7 +59,7 @@ public abstract class Collection<E> implements Iterable<E> {
     if (isEmpty()) return "[0][ ]";
 
     StringBuilder sb = new StringBuilder("[").append(size()).append("][ ");
-    this.forEach(elmt -> sb.append(elmt).append(", "));
+    this.forEach(elmt -> sb.append(Util.stringify(elmt)).append(", "));
     sb.setLength(sb.length() - 2);
     return sb.append(" ]").toString();
   }
