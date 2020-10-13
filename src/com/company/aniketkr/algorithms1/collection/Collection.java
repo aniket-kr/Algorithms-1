@@ -62,7 +62,47 @@ public abstract class Collection<E> implements Iterable<E> {
    * @return {@code true} if all above conditions hold, {@code false} otherwise.
    */
   @Override
-  public abstract boolean equals(Object obj);  // REFERENCE: equalsHelper()
+  public abstract boolean equals(Object obj);
+
+  /**
+   * Checks all of the required conditions for {@link #equals(Object)} one-by-one.
+   *
+   * @param obj      The object to compare with.
+   * @param reqClass The class that the obj should be {@code instanceof} to pass.
+   * @return {@code true} if all {@link #equals(Object) conditions} hold, false otherwise.
+   */
+  protected boolean _equals(Object obj, Class<?> reqClass) {
+    if (this == obj) {
+      return true;
+    }
+
+    // check for correct collection type
+    if (!reqClass.isInstance(obj)) {
+      return false;
+    }
+    Collection<?> collection = (Collection<?>) obj;
+
+    // compare size()
+    if (this.size() != collection.size()) {
+      return false;
+    }
+
+    // compare (cached) hashes
+    if (!this.hashModified && !collection.hashModified) {
+      if (this.hash != collection.hash) {
+        return false;  // equal collections can't have unequal hashCode() values
+      }
+    }
+
+    // compare all elements
+    Iterator<E> itor = this.iterator();
+    for (Object elmt : collection) {
+      if (!Objects.deepEquals(elmt, itor.next())) {
+        return false;
+      }
+    }
+    return true;
+  }
 
   @Override
   public String toString() {
@@ -142,23 +182,6 @@ public abstract class Collection<E> implements Iterable<E> {
    */
   public abstract Collection<E> deepcopy(Function<? super E, E> copyFn);
 
-  /* **************************************************************************
-   * Section: Iteration Operations
-   ************************************************************************** */
-
-  /**
-   * Iterates over the elements of the collection in natural order. The natural order is best
-   * defined by the extending subclasses.
-   *
-   * @return An iterator that iterates over elements.
-   */
-  @Override
-  public abstract Iterator<E> iterator();
-
-  /* **************************************************************************
-   * Section: Protected Helper Methods
-   ************************************************************************** */
-
   protected void _deepcopy(Collection<E> collection, Function<? super E, E> copyFn,//
                            Consumer<E> addElmt) {
     if (copyFn == null) {
@@ -174,43 +197,16 @@ public abstract class Collection<E> implements Iterable<E> {
     collection.hashModified = this.hashModified;
   }
 
+  /* **************************************************************************
+   * Section: Iteration Operations
+   ************************************************************************** */
+
   /**
-   * Checks all of the required conditions for {@link #equals(Object)} one-by-one.
+   * Iterates over the elements of the collection in natural order. The natural order is best
+   * defined by the extending subclasses.
    *
-   * @param obj      The object to compare with.
-   * @param reqClass The class that the obj should be {@code instanceof} to pass.
-   * @return {@code true} if all {@link #equals(Object) conditions} hold, false otherwise.
+   * @return An iterator that iterates over elements.
    */
-  protected boolean _equals(Object obj, Class<?> reqClass) {
-    if (this == obj) {
-      return true;
-    }
-
-    // check for correct collection type
-    if (!reqClass.isInstance(obj)) {
-      return false;
-    }
-    Collection<?> collection = (Collection<?>) obj;
-
-    // compare size()
-    if (this.size() != collection.size()) {
-      return false;
-    }
-
-    // compare (cached) hashes
-    if (!this.hashModified && !collection.hashModified) {
-      if (this.hash != collection.hash) {
-        return false;  // equal collections can't have unequal hashCode() values
-      }
-    }
-
-    // compare all elements
-    Iterator<E> itor = this.iterator();
-    for (Object elmt : collection) {
-      if (!Objects.deepEquals(elmt, itor.next())) {
-        return false;
-      }
-    }
-    return true;
-  }
+  @Override
+  public abstract Iterator<E> iterator();
 }
