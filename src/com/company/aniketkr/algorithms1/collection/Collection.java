@@ -181,7 +181,7 @@ public abstract class Collection<E> implements Iterable<E> {
    * @param reqClass The class that the obj should be {@code instanceof} to pass.
    * @return {@code true} if all {@link #equals(Object) conditions} hold, false otherwise.
    */
-  protected boolean equalsHelper(Object obj, Class<?> reqClass) {
+  protected boolean _equals(Object obj, Class<?> reqClass) {
     if (this == obj) {
       return true;
     }

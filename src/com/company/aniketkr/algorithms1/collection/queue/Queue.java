@@ -20,7 +20,7 @@ public abstract class Queue<E> extends Collection<E> {
 
   @Override
   public boolean equals(Object obj) {
-    return equalsHelper(obj, Queue.class);
+    return _equals(obj, Queue.class);
   }
 
   /* **************************************************************************
