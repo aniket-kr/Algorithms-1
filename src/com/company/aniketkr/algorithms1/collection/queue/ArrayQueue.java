@@ -129,6 +129,7 @@ public final class ArrayQueue<E> extends Queue<E> {
   public ArrayQueue<E> copy() {
     int size = (size() > 2) ? (size() * 2) : INIT_CAPACITY;
     ArrayQueue<E> cp = new ArrayQueue<>(size);
+    _copy(cp);
     copyOverElements(cp.queue);
     return cp;
   }

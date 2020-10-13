@@ -173,6 +173,16 @@ public abstract class Collection<E> implements Iterable<E> {
   public abstract Collection<E> copy();
 
   /**
+   * Copy of internal variables from "this" collection to given {@code collection} object.
+   *
+   * @param collection The other collection to copy over field values to.
+   */
+  protected void _copy(Collection<E> collection) {
+    collection.hash = this.hash;
+    collection.hashModified = this.hashModified;
+  }
+
+  /**
    * Gets a deepcopy of this collection. A deepcopy copies the collection object as well as its
    * elements over to a new collection. Any change made to one is completed isolated of the other.
    *
