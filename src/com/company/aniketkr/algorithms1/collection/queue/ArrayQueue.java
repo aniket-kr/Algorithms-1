@@ -145,7 +145,7 @@ public final class ArrayQueue<E> extends Queue<E> {
   public ArrayQueue<E> deepcopy(Function<? super E, E> copyFn) {
     int size = (size() > 2) ? (size() * 2) : INIT_CAPACITY;
     ArrayQueue<E> cp = new ArrayQueue<>(size);
-    deepcopyMaker(cp, copyFn, cp::enqueue);
+    _deepcopy(cp, copyFn, cp::enqueue);
     return cp;
   }
 

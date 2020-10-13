@@ -159,8 +159,8 @@ public abstract class Collection<E> implements Iterable<E> {
    * Section: Protected Helper Methods
    ************************************************************************** */
 
-  protected void deepcopyMaker(Collection<E> collection, Function<? super E, E> copyFn,//
-                               Consumer<E> addElmt) {
+  protected void _deepcopy(Collection<E> collection, Function<? super E, E> copyFn,//
+                           Consumer<E> addElmt) {
     if (copyFn == null) {
       throw new IllegalArgumentException("param 'copyFn' cannot be null");
     }
