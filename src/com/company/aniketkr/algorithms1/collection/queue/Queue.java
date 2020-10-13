@@ -2,6 +2,7 @@ package com.company.aniketkr.algorithms1.collection.queue;
 
 import com.company.aniketkr.algorithms1.collection.Collection;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.function.Function;
 
 
@@ -40,14 +41,18 @@ public abstract class Queue<E> extends Collection<E> {
    * @return {@code true} if queue has no elements, {@code false} otherwise.
    */
   @Override
-  public abstract boolean isEmpty();
+  public boolean isEmpty() {
+    return super.isEmpty();
+  }
 
   /**
    * Clears the queue of all its elements and set the state of the queue to its
    * <em>default</em> initialisation state.
    */
   @Override
-  public abstract void clear();
+  public void clear() {
+    super.clear();
+  }
 
   /**
    * Checks if queue has {@code elmt} as one of its elements.
@@ -69,7 +74,9 @@ public abstract class Queue<E> extends Collection<E> {
    *
    * @param elmt The element to add.
    */
-  public abstract void enqueue(E elmt);
+  public void enqueue(E elmt) {
+    hashModified = true;
+  }
 
   /**
    * Removes the first element in the queue.
@@ -77,7 +84,14 @@ public abstract class Queue<E> extends Collection<E> {
    * @return The removed element from the front.
    * @throws java.util.NoSuchElementException If queue is empty.
    */
-  public abstract E dequeue();
+  public E dequeue() {
+    if (isEmpty()) {
+      throw new NoSuchElementException("underflow: can't dequeue from empty queue");
+    }
+
+    hashModified = true;
+    return null;  // placeholder null
+  }
 
   /**
    * Returns the first element of the queue, without removing it.
@@ -85,7 +99,12 @@ public abstract class Queue<E> extends Collection<E> {
    * @return The element at the front of the queue.
    * @throws java.util.NoSuchElementException If queue is empty.
    */
-  public abstract E peek();
+  public E peek() {
+    if (isEmpty()) {
+      throw new NoSuchElementException("underflow: can't peek at empty queue");
+    }
+    return null;  // placeholder null
+  }
 
   /* **************************************************************************
    * Section: Duplication Operations

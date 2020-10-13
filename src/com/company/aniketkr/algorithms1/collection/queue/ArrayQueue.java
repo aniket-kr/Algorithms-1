@@ -50,11 +50,6 @@ public final class ArrayQueue<E> extends Queue<E> {
     return wrapped() ? (queue.length - head + tail) : (tail - head);
   }
 
-  @Override
-  public boolean isEmpty() {
-    return size() == 0;
-  }
-
   /**
    * {@inheritDoc}
    * This operation takes constant time.
@@ -62,6 +57,9 @@ public final class ArrayQueue<E> extends Queue<E> {
   @Override
   @SuppressWarnings("unchecked")
   public void clear() {
+    super.clear();
+
+    head = 0;
     tail = 0;
     queue = (E[]) new Object[INIT_CAPACITY];
   }
@@ -76,6 +74,8 @@ public final class ArrayQueue<E> extends Queue<E> {
    */
   @Override
   public void enqueue(E elmt) {
+    super.enqueue(elmt);
+
     if (size() + 1 == queue.length) {  // +1 to size() maintains a null, which is CRUCIAL
       resize(queue.length * 2);
     }
@@ -90,9 +90,7 @@ public final class ArrayQueue<E> extends Queue<E> {
    */
   @Override
   public E dequeue() {
-    if (isEmpty()) {
-      throw new NoSuchElementException("underflow: can't dequeue from empty queue");
-    }
+    super.dequeue();
 
     final E elmt = queue[head];
     queue[head] = null;
@@ -112,9 +110,7 @@ public final class ArrayQueue<E> extends Queue<E> {
    */
   @Override
   public E peek() {
-    if (isEmpty()) {
-      throw new NoSuchElementException("underflow: can't peek at empty queue");
-    }
+    super.peek();
 
     return queue[head];
   }
@@ -149,7 +145,7 @@ public final class ArrayQueue<E> extends Queue<E> {
   public ArrayQueue<E> deepcopy(Function<? super E, E> copyFn) {
     int size = (size() > 2) ? (size() * 2) : INIT_CAPACITY;
     ArrayQueue<E> cp = new ArrayQueue<>(size);
-    deepcopyMaker(copyFn, cp::enqueue);
+    deepcopyMaker(cp, copyFn, cp::enqueue);
     return cp;
   }
 

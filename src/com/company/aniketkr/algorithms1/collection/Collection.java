@@ -16,23 +16,33 @@ import java.util.function.Function;
  */
 public abstract class Collection<E> implements Iterable<E> {
 
+  protected int hash;
+  protected boolean hashModified = true;
+
   /* **************************************************************************
    * Section: Object Operations
    ************************************************************************** */
 
   @Override
   public int hashCode() {
-    long hash = 0L;
+    if (!hashModified) {
+      return hash;
+    }
+
+    long hashCode = 0L;
     int power = 0;
     for (E elmt : this) {
       if (elmt instanceof Object[]) {
-        hash += Math.pow(31, power++) * Arrays.deepHashCode((Object[]) elmt);
+        hashCode += Math.pow(31, power++) * Arrays.deepHashCode((Object[]) elmt);
       } else {
-        hash += Math.pow(31, power++) * Objects.hashCode(elmt);
+        hashCode += Math.pow(31, power++) * Objects.hashCode(elmt);
       }
     }
 
-    return (int) (hash % Integer.MAX_VALUE);
+    hash = (int) (hashCode % Integer.MAX_VALUE);
+    hashModified = false;
+
+    return hash;
   }
 
   /**
@@ -82,13 +92,17 @@ public abstract class Collection<E> implements Iterable<E> {
    *
    * @return {@code true} if collection has no elements, {@code false} otherwise.
    */
-  public abstract boolean isEmpty();
+  public boolean isEmpty() {
+    return size() == 0;
+  }
 
   /**
    * Clears the collection of all its elements and set the state of the collection to its
    * <em>default</em> initialisation state.
    */
-  public abstract void clear();
+  public void clear() {
+    hashModified = true;
+  }
 
   /**
    * Checks if collection has {@code elmt} as one of its elements.
@@ -145,7 +159,8 @@ public abstract class Collection<E> implements Iterable<E> {
    * Section: Protected Helper Methods
    ************************************************************************** */
 
-  protected void deepcopyMaker(Function<? super E, E> copyFn, Consumer<E> addElmt) {
+  protected void deepcopyMaker(Collection<E> collection, Function<? super E, E> copyFn,//
+                               Consumer<E> addElmt) {
     if (copyFn == null) {
       throw new IllegalArgumentException("param 'copyFn' cannot be null");
     }
@@ -153,6 +168,10 @@ public abstract class Collection<E> implements Iterable<E> {
     for (E elmt : this) {
       addElmt.accept(copyFn.apply(elmt));
     }
+
+    // set hash cache fields
+    collection.hash = this.hash;
+    collection.hashModified = this.hashModified;
   }
 
   /**
@@ -166,12 +185,23 @@ public abstract class Collection<E> implements Iterable<E> {
     if (this == obj) {
       return true;
     }
+
+    // check for correct collection type
     if (!reqClass.isInstance(obj)) {
       return false;
     }
     Collection<?> collection = (Collection<?>) obj;
+
+    // compare size()
     if (this.size() != collection.size()) {
       return false;
+    }
+
+    // compare (cached) hashes
+    if (!this.hashModified && !collection.hashModified) {
+      if (this.hash != collection.hash) {
+        return false;  // equal collections can't have unequal hashCode() values
+      }
     }
 
     // compare all elements

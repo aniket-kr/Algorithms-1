@@ -25,17 +25,14 @@ public final class LinkedQueue<E> extends Queue<E> {
     return length;
   }
 
-  @Override
-  public boolean isEmpty() {
-    return size() == 0;
-  }
-
   /**
    * {@inheritDoc}
    * Takes constant time.
    */
   @Override
   public void clear() {
+    super.clear();
+
     head = null;
     tail = null;
     length = 0;
@@ -51,8 +48,9 @@ public final class LinkedQueue<E> extends Queue<E> {
    */
   @Override
   public void enqueue(E elmt) {
-    Node<E> node = new Node<>(elmt);
+    super.enqueue(elmt);
 
+    Node<E> node = new Node<>(elmt);
     if (isEmpty()) {
       tail = node;
       head = node;
@@ -69,9 +67,7 @@ public final class LinkedQueue<E> extends Queue<E> {
    */
   @Override
   public E dequeue() {
-    if (isEmpty()) {
-      throw new NoSuchElementException("underflow: can't dequeue from empty queue");
-    }
+    super.dequeue();
 
     final E elmt = head.elmt;
     if (size() == 1) {
@@ -91,9 +87,7 @@ public final class LinkedQueue<E> extends Queue<E> {
    */
   @Override
   public E peek() {
-    if (isEmpty()) {
-      throw new NoSuchElementException("underflow: can't peek at empty queue");
-    }
+    super.peek();
 
     return head.elmt;
   }
@@ -124,7 +118,7 @@ public final class LinkedQueue<E> extends Queue<E> {
   @Override
   public LinkedQueue<E> deepcopy(Function<? super E, E> copyFn) {
     LinkedQueue<E> cp = new LinkedQueue<>();
-    deepcopyMaker(copyFn, cp::enqueue);
+    deepcopyMaker(cp, copyFn, cp::enqueue);
     return cp;
   }
 
