@@ -45,7 +45,7 @@ com.company.aniketkr.algorithms1
   |           `-- *HeapPriorityQueue
   |
   |-- sorting
-  |     |-- *Selection
+  |     |-- Selection
   |     |-- *Bubble
   |     |-- *Insertion
   |     |-- *Shell
