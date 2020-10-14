@@ -45,7 +45,6 @@ com.company.aniketkr.algorithms1
   |           `-- *HeapPriorityQueue
   |
   |-- sorting
-  |     |-- *Sorter (package-private abstract)
   |     |-- *Selection
   |     |-- *Bubble
   |     |-- *Insertion
@@ -88,12 +87,11 @@ API Notes
    associate a given "key" to the provided "value".
 
  + `OrderMap` extends `Map` abstract class to take advantage of the fact
-    that "keys" can be ordered, and hence provides an extended API that can
+   that "keys" can be ordered, and hence provides an extended API that can
    be implemented efficiently.
 
- + Abstract class `Sorter` is package-private but provides a base class to
-   inherit certain overloads of the `sort()` method. All other public
-   classes in package `sorting` inherit the base class `Sorter`.
+ + Package `sorting` has all sorting algorithms with similar `sort()`
+   overloads.
 
 Implementation Notes
 --------------------
