@@ -71,7 +71,7 @@ public abstract class Collection<E> implements Iterable<E> {
    * @param reqClass The class that the obj should be {@code instanceof} to pass.
    * @return {@code true} if all {@link #equals(Object) conditions} hold, false otherwise.
    */
-  protected boolean _equals(Object obj, Class<?> reqClass) {
+  protected boolean equals_(Object obj, Class<?> reqClass) {
     if (this == obj) {
       return true;
     }
@@ -177,7 +177,7 @@ public abstract class Collection<E> implements Iterable<E> {
    *
    * @param collection The other collection to copy over field values to.
    */
-  protected void _copy(Collection<E> collection) {
+  protected void copy_(Collection<E> collection) {
     collection.hash = this.hash;
     collection.hashModified = this.hashModified;
   }
@@ -192,7 +192,7 @@ public abstract class Collection<E> implements Iterable<E> {
    */
   public abstract Collection<E> deepcopy(Function<? super E, E> copyFn);
 
-  protected void _deepcopy(Collection<E> collection, Function<? super E, E> copyFn,//
+  protected void deepcopy_(Collection<E> collection, Function<? super E, E> copyFn, //
                            Consumer<E> addElmt) {
     if (copyFn == null) {
       throw new IllegalArgumentException("param 'copyFn' cannot be null");

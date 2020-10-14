@@ -118,7 +118,7 @@ public final class LinkedQueue<E> extends Queue<E> {
   @Override
   public LinkedQueue<E> deepcopy(Function<? super E, E> copyFn) {
     LinkedQueue<E> cp = new LinkedQueue<>();
-    _deepcopy(cp, copyFn, cp::enqueue);
+    deepcopy_(cp, copyFn, cp::enqueue);
     return cp;
   }
 
