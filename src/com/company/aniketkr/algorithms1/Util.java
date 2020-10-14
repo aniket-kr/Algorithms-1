@@ -6,6 +6,8 @@ import java.util.Objects;
 
 /**
  * Houses all sorts of utility methods required all over the library.
+ *
+ * @author Aniket Kumar
  */
 public class Util {
 
@@ -13,6 +15,7 @@ public class Util {
    * Safely convert {@code obj} into its string representation using either
    * {@code Arrays.deepToString}, {@code Arrays.toString} or {@code obj.toString()}. Safe for use
    * with primitive arrays (but <b>NOT</b> primitives).
+   *
    * @param obj Object to get string representation of.
    * @return A String.
    */
@@ -43,5 +46,19 @@ public class Util {
     }
 
     return Objects.toString(obj);
+  }
+
+  /**
+   * Throws an {@code IllegalArgumentException} if {@code obj} is {@code null}.
+   *
+   * @param obj       Object to check for being non-{@code null}.
+   * @param paramName The name of the parameter passed; will show in error message.
+   * @throws IllegalArgumentException Having message "{@code param '<paramName>' cannot be null}",
+   *                                  if {@code obj} is {@code null}.
+   */
+  public static void requireNonNull(Object obj, String paramName) {
+    if (obj == null) {
+      throw new IllegalArgumentException(String.format("param '%s' cannot be null", paramName));
+    }
   }
 }
