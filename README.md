@@ -47,7 +47,7 @@ com.company.aniketkr.algorithms1
   |-- sorting
   |     |-- Selection
   |     |-- Bubble
-  |     |-- *Insertion
+  |     |-- Insertion
   |     |-- *Shell
   |     |-- *Merge
   |     |-- *Quick
