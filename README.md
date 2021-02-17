@@ -1,9 +1,8 @@
 Algorithms 1
 ============
 This repo contains Java implementations of all data structures and 
-associated algorithms that were I learned during the excellent Coursera 
-course [Algorithms, Part I](https://www.coursera.org/learn/algorithms-part1),
-offered by the Princeton University.
+associated algorithms that were I learned during the excellent 
+course "Algorithms, Part I", offered by the Princeton University.
 
 Package Structure
 -----------------
